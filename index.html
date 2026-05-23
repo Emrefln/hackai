@@ -926,6 +926,7 @@ body::before {
 }
 
 /* ─── RIGHT PANEL ──────────────────────────────────────────────────── */
+  <button class="topbar-btn" onclick="openAdminPanel()">Admin Paneli</button>
 .right-panel {
   width: var(--panel-w);
   flex-shrink: 0;
@@ -2519,6 +2520,28 @@ document.addEventListener('drop', e => {
    START
 ───────────────────────────────────────────────────────────────── */
 window.addEventListener('load', init);
+  /* ─── ADMIN PANEL STYLES ─────────────────────────────────────────── */
+.admin-badge {
+    background: rgba(255, 59, 92, 0.1);
+    border: 1px solid var(--red);
+    color: var(--red);
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    margin-top: 10px;
+}
+.admin-btn {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-soft);
+    cursor: pointer;
+    font-size: 11px;
+    border-radius: 4px;
+}
+.admin-btn:hover { background: var(--border); color: white; }
 </script>
 </body>
 </html>
