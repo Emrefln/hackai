@@ -13,10 +13,6 @@
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
-  #adminTab { color: var(--red) !important; border-bottom: 2px solid var(--red) !important; }
-.admin-card { background: var(--surface); padding: 10px; border-radius: 4px; border-left: 3px solid var(--red); }
-.admin-btn.danger { border: 1px solid var(--red); color: var(--red); }
-.admin-btn.danger:hover { background: var(--red); color: white; }
   --void:       #08080a;
   --deep:       #0d0d10;
   --surface:    #121215;
@@ -158,22 +154,6 @@ body::before {
   padding: 0;
   opacity: 0;
   pointer-events: none;
-}
-  function dumpRawLogs() {
-    if (!adminMode) return;
-    const blob = new Blob([JSON.stringify(chats, null, 2)], {type: 'application/json'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `neuralos_RAW_DUMP_${Date.now()}.json`;
-    a.click();
-}
-
-function toggleDebugMode() {
-    if (!adminMode) return;
-    // Debug modunu açarsan, konsola veya arayüze token detaylarını basar
-    console.log("Debug Mode Active: Showing raw Ollama responses.");
-    showToast("Debug modu aktif (Konsolu kontrol et)", "info");
 }
 
 /* Logo */
@@ -946,7 +926,6 @@ function toggleDebugMode() {
 }
 
 /* ─── RIGHT PANEL ──────────────────────────────────────────────────── */
-  <button class="topbar-btn" onclick="openAdminPanel()">Admin Paneli</button>
 .right-panel {
   width: var(--panel-w);
   flex-shrink: 0;
@@ -1558,22 +1537,6 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
         <div class="panel-section-title" style="margin-bottom:10px">Ollama Endpoint</div>
         <div class="system-prompt-area" style="padding:8px 12px;">
           <input type="text" id="ollamaEndpoint" value="http://127.0.0.1:11434" style="background:transparent;border:none;outline:none;color:var(--text);font-family:var(--font-mono);font-size:12px;width:100%">
-        <div class="panel-tab" id="adminTab" onclick="switchPanelTab(this,'admin')" data-panel="admin" style="display:none; color:var(--red);">
-  <i class="fa-solid fa-lock"></i> ADMIN
-</div>
-
-<div class="panel-body" id="panelAdmin" style="display:none">
-  <div class="panel-section-title" style="color:var(--red)">SANSÜRSÜZ KONTROL</div>
-  
-  <div class="admin-card">
-    <div class="admin-label">Model Engine</div>
-    <div class="admin-value" id="adminModelStat">TinyLlama-1.1B</div>
-  </div>
-
-  <button class="admin-btn danger" onclick="hardResetSystem()">FULL WIPE (Tüm Veriyi Sil)</button>
-  <button class="admin-btn" onclick="dumpRawLogs()">Ham Logları İndir (JSON)</button>
-  <button class="admin-btn" onclick="toggleDebugMode()">Debug Mode: ON/OFF</button>
-</div>
         </div>
       </div>
     </div>
@@ -1658,21 +1621,6 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
 <input type="file" id="fileInput" multiple style="display:none" onchange="handleFiles(this.files)">
 
 <script>
-  let adminMode = false;
-
-function activateAdminMode() {
-    const pass = prompt("Yönetici Parolası (Sansürsüz Erişim):");
-    if (pass === "kral123") { // Buraya kendi şifreni yaz
-        adminMode = true;
-        document.getElementById('adminTab').style.display = 'block';
-        showToast("Sistem Yönetimi: FULL ACCESS", "success");
-        // Paneli otomatik admin sekmesine al
-        const adminEl = document.querySelector('[data-panel="admin"]');
-        switchPanelTab(adminEl, 'admin');
-    } else {
-        showToast("Yetkisiz girişim!", "error");
-    }
-}
 /* ─────────────────────────────────────────────────────────────────
    STATE
 ───────────────────────────────────────────────────────────────── */
@@ -2571,28 +2519,6 @@ document.addEventListener('drop', e => {
    START
 ───────────────────────────────────────────────────────────────── */
 window.addEventListener('load', init);
-  /* ─── ADMIN PANEL STYLES ─────────────────────────────────────────── */
-.admin-badge {
-    background: rgba(255, 59, 92, 0.1);
-    border: 1px solid var(--red);
-    color: var(--red);
-    padding: 10px;
-    border-radius: 6px;
-    font-size: 11px;
-    margin-top: 10px;
-}
-.admin-btn {
-    width: 100%;
-    padding: 8px;
-    margin-top: 5px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    color: var(--text-soft);
-    cursor: pointer;
-    font-size: 11px;
-    border-radius: 4px;
-}
-.admin-btn:hover { background: var(--border); color: white; }
 </script>
 </body>
 </html>
