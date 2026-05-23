@@ -1538,6 +1538,22 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
         <div class="panel-section-title" style="margin-bottom:10px">Ollama Endpoint</div>
         <div class="system-prompt-area" style="padding:8px 12px;">
           <input type="text" id="ollamaEndpoint" value="http://127.0.0.1:11434" style="background:transparent;border:none;outline:none;color:var(--text);font-family:var(--font-mono);font-size:12px;width:100%">
+        <div class="panel-tab" id="adminTab" onclick="switchPanelTab(this,'admin')" data-panel="admin" style="display:none; color:var(--red);">
+  <i class="fa-solid fa-lock"></i> ADMIN
+</div>
+
+<div class="panel-body" id="panelAdmin" style="display:none">
+  <div class="panel-section-title" style="color:var(--red)">SANSÜRSÜZ KONTROL</div>
+  
+  <div class="admin-card">
+    <div class="admin-label">Model Engine</div>
+    <div class="admin-value" id="adminModelStat">TinyLlama-1.1B</div>
+  </div>
+
+  <button class="admin-btn danger" onclick="hardResetSystem()">FULL WIPE (Tüm Veriyi Sil)</button>
+  <button class="admin-btn" onclick="dumpRawLogs()">Ham Logları İndir (JSON)</button>
+  <button class="admin-btn" onclick="toggleDebugMode()">Debug Mode: ON/OFF</button>
+</div>
         </div>
       </div>
     </div>
@@ -1622,6 +1638,21 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
 <input type="file" id="fileInput" multiple style="display:none" onchange="handleFiles(this.files)">
 
 <script>
+  let adminMode = false;
+
+function activateAdminMode() {
+    const pass = prompt("Yönetici Parolası (Sansürsüz Erişim):");
+    if (pass === "kral123") { // Buraya kendi şifreni yaz
+        adminMode = true;
+        document.getElementById('adminTab').style.display = 'block';
+        showToast("Sistem Yönetimi: FULL ACCESS", "success");
+        // Paneli otomatik admin sekmesine al
+        const adminEl = document.querySelector('[data-panel="admin"]');
+        switchPanelTab(adminEl, 'admin');
+    } else {
+        showToast("Yetkisiz girişim!", "error");
+    }
+}
 /* ─────────────────────────────────────────────────────────────────
    STATE
 ───────────────────────────────────────────────────────────────── */
