@@ -1,445 +1,2524 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HackerAI - Qwen Premium v4</title>
-    <style>
-        :root {
-            --bg-main: #131314;
-            --bg-sidebar: #1e1f20;
-            --bg-input: #282a2c;
-            --text-main: #e3e3e3;
-            --accent: #ef4444;
-            --user-msg: #2b2a2a;
-            --code-bg: #0f0f10;
-        }
-        body { margin: 0; padding: 0; background-color: var(--bg-main); color: var(--text-main); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; height: 100vh; overflow: hidden; }
-        
-        /* Auth Ekranı */
-        #auth-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-main); z-index: 10000; display: flex; justify-content: center; align-items: center; }
-        .auth-box { background: var(--bg-sidebar); padding: 40px; border-radius: 16px; border: 1px solid #3c4043; width: 340px; text-align: center; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
-        .auth-box h2 { margin-top: 0; color: #fff; letter-spacing: 1px; }
-        .auth-box input { width: 100%; padding: 12px; margin: 8px 0; background: var(--bg-main); border: 1px solid #3c4043; color: white; border-radius: 8px; box-sizing: border-box; font-size: 14px; }
-        .auth-box input:focus { border-color: #888; outline: none; }
-        .auth-btn { width: 100%; padding: 12px; background: #fff; color: #000; border: none; border-radius: 24px; font-weight: bold; cursor: pointer; margin-top: 10px; font-size: 14px; }
-        .auth-btn:hover { background: #e3e3e3; }
-        
-        .google-btn { width: 100%; padding: 12px; background: #fff; color: #3c4043; border: 1px solid #c4c7c5; border-radius: 24px; font-weight: bold; cursor: pointer; margin-top: 12px; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .google-btn:hover { background: #f7f9f9; }
-        .divider { color: #8e918f; font-size: 13px; margin: 15px 0; display: flex; align-items: center; justify-content: center; }
-        .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: #3c4043; margin: 0 10px; }
-        .toggle-link { color: #8e918f; font-size: 13px; margin-top: 15px; display: inline-block; cursor: pointer; text-decoration: underline; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NeuralOS — AI Core</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+/* ─── RESET & VARIABLES ─────────────────────────────────────────────── */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-        /* Sol Menü */
-        #sidebar { width: 260px; background-color: var(--bg-sidebar); display: flex; flex-direction: column; padding: 15px; border-right: 1px solid #3c4043; }
-        .new-chat-btn { background: #1a1a1a; border: 1px solid #5f6368; color: white; padding: 12px; border-radius: 24px; cursor: pointer; text-align: center; font-weight: bold; margin-bottom: 20px; font-family: inherit; }
-        .new-chat-btn:hover { background: #2d2e30; }
-        #history-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
-        .history-item { padding: 10px 15px; border-radius: 8px; cursor: pointer; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; background: transparent; transition: 0.2s; }
-        .history-item.active { background: #2d2e30; border-left: 3px solid var(--accent); }
-        .history-item:hover { background: #2d2e30; }
-        .logout-btn { background: transparent; border: 1px solid #ef4444; color: #ef4444; padding: 8px; border-radius: 18px; cursor: pointer; margin-top: 10px; font-weight: bold; }
-        .logout-btn:hover { background: rgba(239, 68, 68, 0.1); }
-        .sidebar-footer { font-size: 12px; color: #9aa0a6; text-align: center; padding-top: 10px; border-top: 1px solid #3c4043; font-family: monospace; }
+:root {
+  --void:       #08080a;
+  --deep:       #0d0d10;
+  --surface:    #121215;
+  --panel:      #17171b;
+  --border:     #222228;
+  --border-hi:  #2e2e38;
+  --muted:      #3a3a46;
+  --text-dim:   #5c5c6e;
+  --text-soft:  #8e8ea0;
+  --text:       #c8c8d8;
+  --text-bright:#eeeef4;
+  --cyan:       #00e5ff;
+  --cyan-dim:   rgba(0,229,255,0.08);
+  --cyan-glow:  rgba(0,229,255,0.25);
+  --violet:     #8b5cf6;
+  --violet-dim: rgba(139,92,246,0.08);
+  --green:      #00ffa3;
+  --green-dim:  rgba(0,255,163,0.08);
+  --orange:     #ff6b35;
+  --red:        #ff3b5c;
+  --gold:       #ffd166;
+  --font-mono:  'Space Mono', monospace;
+  --font-display:'Syne', sans-serif;
+  --font-body:  'DM Sans', sans-serif;
+  --radius:     10px;
+  --radius-lg:  16px;
+  --sidebar-w:  280px;
+  --panel-w:    320px;
+  --transition: cubic-bezier(0.4, 0, 0.2, 1);
+}
 
-        /* Ana İçerik */
-        #main-content { flex: 1; display: flex; flex-direction: column; height: 100vh; position: relative; }
-        #top-bar { padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; background: var(--bg-main); border-bottom: 1px solid #3c4043; }
-        #chat-window { flex: 1; overflow-y: auto; padding: 30px 10% 120px 10%; display: flex; flex-direction: column; gap: 25px; }
-        
-        .message-row { display: flex; flex-direction: column; width: 100%; }
-        .message { max-width: 85%; padding: 15px 20px; border-radius: 12px; line-height: 1.6; font-size: 16px; word-wrap: break-word; }
-        .user-row { align-items: flex-end; }
-        .user-row .message { background-color: var(--user-msg); border-radius: 18px 18px 4px 18px; white-space: pre-wrap; }
-        .ai-row { align-items: flex-start; }
-        .ai-row .message { background-color: transparent; padding-left: 0; width: 100%; }
-        .ai-row.admin-mode-active .message { border-left: 3px solid var(--accent); padding-left: 15px; }
-        
-        .uploaded-img { max-width: 300px; max-height: 300px; border-radius: 8px; margin-top: 10px; border: 1px solid #3c4043; }
+html, body { height: 100%; overflow: hidden; }
 
-        pre { background: var(--code-bg); padding: 15px; border-radius: 8px; overflow-x: auto; position: relative; border: 1px solid #3c4043; margin: 10px 0; font-family: 'Consolas', monospace; }
-        .copy-btn { position: absolute; top: 8px; right: 8px; background: #282a2c; color: #e3e3e3; border: 1px solid #3c4043; padding: 4px 8px; border-radius: 4px; font-size: 12px; cursor: pointer; }
-        .copy-btn:hover { background: #353739; }
+body {
+  background: var(--void);
+  color: var(--text);
+  font-family: var(--font-body);
+  display: flex;
+  font-size: 15px;
+  line-height: 1.6;
+  cursor: default;
+}
 
-        #input-area-container { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, var(--bg-main) 30%); padding: 20px 10% 30px 10%; }
-        #input-wrapper { background-color: var(--bg-input); border-radius: 32px; padding: 8px 20px; display: flex; align-items: center; gap: 12px; }
-        textarea { flex: 1; background: transparent; border: none; color: var(--text-main); font-size: 16px; outline: none; resize: none; height: 24px; font-family: inherit; }
-        .icon-btn { background: transparent; border: none; color: #c4c7c5; cursor: pointer; padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-        .icon-btn:hover { background-color: #353739; color: white; }
-        
-        #admin-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; z-index: 9999; }
-        .modal-box { background: #1e1f20; padding: 30px; border-radius: 12px; border: 1px solid var(--accent); text-align: center; }
-        .modal-box input { background: #131314; border: 1px solid var(--accent); color: white; padding: 10px; font-size: 16px; text-align: center; margin-bottom: 15px; border-radius: 4px; }
-    </style>
+/* ─── CUSTOM SCROLLBAR ─────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--muted); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-dim); }
+
+/* ─── GLOBAL BACKGROUND NOISE ──────────────────────────────────────── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.5;
+}
+
+/* ─── ANIMATED GRID BACKGROUND ─────────────────────────────────────── */
+.bg-grid {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background-image:
+    linear-gradient(rgba(0,229,255,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,229,255,0.025) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events: none;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 50%, black 30%, transparent 100%);
+}
+
+/* ─── AURORA BLOBS ──────────────────────────────────────────────────── */
+.aurora {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.aurora-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.07;
+  animation: aurora-drift 12s ease-in-out infinite alternate;
+}
+.aurora-blob:nth-child(1) {
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, var(--cyan), transparent 70%);
+  top: -200px; left: -100px;
+  animation-duration: 14s;
+}
+.aurora-blob:nth-child(2) {
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, var(--violet), transparent 70%);
+  bottom: -150px; right: -100px;
+  animation-duration: 10s;
+  animation-direction: alternate-reverse;
+}
+.aurora-blob:nth-child(3) {
+  width: 350px; height: 350px;
+  background: radial-gradient(circle, var(--green), transparent 70%);
+  top: 40%; left: 50%;
+  transform: translate(-50%, -50%);
+  animation-duration: 16s;
+  opacity: 0.04;
+}
+@keyframes aurora-drift {
+  from { transform: translate(0, 0) scale(1); }
+  to   { transform: translate(40px, 30px) scale(1.1); }
+}
+
+/* ─── LAYOUT ────────────────────────────────────────────────────────── */
+.app-shell {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  width: 100%;
+  height: 100vh;
+}
+
+/* ─── SIDEBAR ───────────────────────────────────────────────────────── */
+.sidebar {
+  width: var(--sidebar-w);
+  flex-shrink: 0;
+  background: var(--deep);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  padding: 20px 14px;
+  gap: 16px;
+  overflow: hidden;
+  transition: width 0.3s var(--transition), opacity 0.3s;
+}
+.sidebar.collapsed {
+  width: 0;
+  padding: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Logo */
+.logo-area {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 8px 14px;
+  border-bottom: 1px solid var(--border);
+}
+.logo-icon {
+  width: 36px; height: 36px;
+  background: linear-gradient(135deg, var(--cyan), var(--violet));
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  color: var(--void);
+  font-weight: 700;
+  flex-shrink: 0;
+  box-shadow: 0 0 20px var(--cyan-glow);
+}
+.logo-text {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text-bright);
+  letter-spacing: -0.5px;
+}
+.logo-text span { color: var(--cyan); }
+.logo-version {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+  margin-top: 2px;
+}
+
+/* New Chat Button */
+.new-chat-btn {
+  width: 100%;
+  background: linear-gradient(135deg, rgba(0,229,255,0.1), rgba(139,92,246,0.1));
+  border: 1px solid var(--border-hi);
+  color: var(--text-bright);
+  padding: 11px 16px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  transition: all 0.25s;
+  position: relative;
+  overflow: hidden;
+}
+.new-chat-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--cyan), var(--violet));
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+.new-chat-btn:hover::before { opacity: 0.15; }
+.new-chat-btn:hover { border-color: var(--cyan); box-shadow: 0 0 20px var(--cyan-glow); }
+.new-chat-btn:active { transform: scale(0.98); }
+.new-chat-btn > * { position: relative; z-index: 1; }
+
+/* Section Label */
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  padding: 0 8px;
+}
+
+/* Chat List */
+.chat-list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.chat-item {
+  padding: 9px 12px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--text-soft);
+  transition: all 0.2s;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  position: relative;
+  group: true;
+}
+.chat-item:hover {
+  background: rgba(255,255,255,0.04);
+  color: var(--text);
+  border-color: var(--border);
+}
+.chat-item.active {
+  background: var(--cyan-dim);
+  border-color: rgba(0,229,255,0.2);
+  color: var(--text-bright);
+}
+.chat-item.active .chat-item-icon { color: var(--cyan); }
+.chat-item-icon { font-size: 12px; opacity: 0.6; flex-shrink: 0; }
+.chat-item.active .chat-item-icon { opacity: 1; }
+.chat-item-text {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+}
+.chat-item-del {
+  opacity: 0;
+  padding: 2px 5px;
+  border-radius: 4px;
+  color: var(--text-dim);
+  font-size: 10px;
+  transition: 0.2s;
+  flex-shrink: 0;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+.chat-item:hover .chat-item-del {
+  opacity: 1;
+}
+.chat-item-del:hover { color: var(--red); }
+
+/* Sidebar Bottom */
+.sidebar-footer {
+  border-top: 1px solid var(--border);
+  padding-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.sidebar-footer-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: var(--radius);
+  font-size: 13px;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: 0.2s;
+  border: 1px solid transparent;
+  background: none;
+  width: 100%;
+  text-align: left;
+}
+.sidebar-footer-btn:hover {
+  background: rgba(255,255,255,0.03);
+  color: var(--text);
+  border-color: var(--border);
+}
+.sidebar-footer-btn i { width: 16px; text-align: center; font-size: 12px; }
+
+/* ─── MAIN CHAT ──────────────────────────────────────────────────────── */
+.main-chat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 0;
+}
+
+/* ─── TOP BAR ───────────────────────────────────────────────────────── */
+.topbar {
+  height: 56px;
+  flex-shrink: 0;
+  background: rgba(13,13,16,0.85);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  gap: 14px;
+}
+.topbar-toggle {
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-soft);
+  cursor: pointer;
+  transition: 0.2s;
+  font-size: 13px;
+}
+.topbar-toggle:hover { background: var(--panel); color: var(--text); }
+.topbar-title {
+  flex: 1;
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.topbar-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 99px;
+  background: var(--green-dim);
+  border: 1px solid rgba(0,255,163,0.2);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--green);
+  letter-spacing: 0.5px;
+  animation: pulse-badge 3s ease-in-out infinite;
+}
+.topbar-badge::before {
+  content: '';
+  width: 6px; height: 6px;
+  background: var(--green);
+  border-radius: 50%;
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+@keyframes pulse-badge {
+  0%,100% { box-shadow: 0 0 0 0 rgba(0,255,163,0); }
+  50% { box-shadow: 0 0 12px rgba(0,255,163,0.15); }
+}
+@keyframes pulse-dot {
+  0%,100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.3); opacity: 0.7; }
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.topbar-action-btn {
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-soft);
+  cursor: pointer;
+  transition: 0.2s;
+  font-size: 13px;
+  position: relative;
+}
+.topbar-action-btn:hover { background: var(--panel); color: var(--text); border-color: var(--border-hi); }
+.topbar-action-btn[data-tooltip]:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: -32px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--text);
+  white-space: nowrap;
+  z-index: 100;
+  pointer-events: none;
+}
+
+/* Model selector */
+.model-selector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 99px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  cursor: pointer;
+  transition: 0.2s;
+  font-size: 12px;
+  color: var(--text-soft);
+  position: relative;
+}
+.model-selector:hover { border-color: var(--border-hi); color: var(--text); }
+.model-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--cyan); flex-shrink: 0; }
+.model-name { font-family: var(--font-mono); font-size: 11px; }
+.model-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  background: var(--panel);
+  border: 1px solid var(--border-hi);
+  border-radius: var(--radius);
+  overflow: hidden;
+  z-index: 50;
+  display: none;
+  min-width: 200px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+.model-selector.open .model-dropdown { display: block; }
+.model-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--text-soft);
+  transition: 0.15s;
+  font-family: var(--font-mono);
+}
+.model-option:hover { background: rgba(255,255,255,0.04); color: var(--text); }
+.model-option.selected { color: var(--cyan); }
+.model-option .model-tag {
+  margin-left: auto;
+  font-size: 9px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--cyan-dim);
+  color: var(--cyan);
+  border: 1px solid rgba(0,229,255,0.2);
+}
+
+/* ─── MESSAGES CONTAINER ────────────────────────────────────────────── */
+.messages-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 32px max(5%, 40px);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  scroll-behavior: smooth;
+}
+
+/* ─── WELCOME SCREEN ─────────────────────────────────────────────────── */
+.welcome-screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  padding: 40px;
+  text-align: center;
+  animation: fade-up 0.5s var(--transition);
+}
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.welcome-orb {
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--cyan), var(--violet));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px;
+  color: var(--void);
+  box-shadow: 0 0 40px var(--cyan-glow), 0 0 80px rgba(139,92,246,0.15);
+  animation: orb-pulse 4s ease-in-out infinite;
+}
+@keyframes orb-pulse {
+  0%,100% { box-shadow: 0 0 40px var(--cyan-glow), 0 0 80px rgba(139,92,246,0.15); }
+  50%      { box-shadow: 0 0 60px var(--cyan-glow), 0 0 120px rgba(139,92,246,0.25); }
+}
+.welcome-title {
+  font-family: var(--font-display);
+  font-size: 36px;
+  font-weight: 800;
+  color: var(--text-bright);
+  letter-spacing: -1px;
+  line-height: 1.1;
+}
+.welcome-title em {
+  font-style: normal;
+  background: linear-gradient(135deg, var(--cyan), var(--violet));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.welcome-sub {
+  color: var(--text-soft);
+  font-size: 15px;
+  max-width: 400px;
+}
+.quick-actions {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  max-width: 560px;
+  width: 100%;
+}
+.quick-action {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 14px 16px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.25s;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.quick-action:hover {
+  border-color: var(--border-hi);
+  background: var(--surface);
+  transform: translateY(-2px);
+}
+.qa-icon {
+  font-size: 20px;
+  margin-bottom: 2px;
+}
+.qa-title {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+}
+.qa-sub {
+  font-size: 12px;
+  color: var(--text-dim);
+  line-height: 1.4;
+}
+
+/* ─── MESSAGES ───────────────────────────────────────────────────────── */
+.msg-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  animation: msg-in 0.3s var(--transition);
+}
+@keyframes msg-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.msg-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+.msg-row.user { justify-content: flex-end; }
+
+.msg-avatar {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px;
+  margin-top: 4px;
+}
+.msg-avatar.ai-avatar {
+  background: linear-gradient(135deg, var(--cyan), var(--violet));
+  color: var(--void);
+  box-shadow: 0 0 12px var(--cyan-glow);
+}
+.msg-avatar.user-avatar {
+  background: var(--panel);
+  border: 1px solid var(--border-hi);
+  color: var(--text-soft);
+}
+
+.msg-content-wrap { max-width: 72%; display: flex; flex-direction: column; gap: 4px; }
+.msg-row.user .msg-content-wrap { align-items: flex-end; }
+
+.msg-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-dim);
+  padding: 0 4px;
+}
+.msg-name { color: var(--text-soft); }
+.msg-row.user .msg-name { color: var(--text-soft); }
+
+.msg-bubble {
+  padding: 12px 16px;
+  border-radius: 14px;
+  font-size: 14.5px;
+  line-height: 1.65;
+  color: var(--text);
+  word-break: break-word;
+  position: relative;
+}
+.msg-row.user .msg-bubble {
+  background: linear-gradient(135deg, rgba(0,229,255,0.12), rgba(139,92,246,0.08));
+  border: 1px solid rgba(0,229,255,0.15);
+  border-radius: 14px 4px 14px 14px;
+  color: var(--text-bright);
+}
+.msg-row.ai .msg-bubble {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 4px 14px 14px 14px;
+}
+.msg-row.ai .msg-bubble:hover {
+  border-color: var(--border-hi);
+}
+
+/* Code blocks inside messages */
+.msg-bubble pre {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px;
+  margin: 10px 0;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--cyan);
+  position: relative;
+}
+.msg-bubble code {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  background: rgba(0,229,255,0.08);
+  border: 1px solid rgba(0,229,255,0.15);
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: var(--cyan);
+}
+.msg-bubble pre code {
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+.msg-bubble p { margin-bottom: 8px; }
+.msg-bubble p:last-child { margin-bottom: 0; }
+.msg-bubble ul, .msg-bubble ol {
+  padding-left: 20px;
+  margin: 8px 0;
+}
+.msg-bubble li { margin-bottom: 4px; }
+.msg-bubble strong { color: var(--text-bright); font-weight: 600; }
+
+/* Copy code button */
+.code-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--border);
+  padding: 6px 12px;
+  border-radius: var(--radius) var(--radius) 0 0;
+  margin: 10px 0 0 0;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-dim);
+}
+.copy-code-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: 0.2s;
+  font-family: var(--font-mono);
+}
+.copy-code-btn:hover { color: var(--cyan); background: var(--cyan-dim); }
+
+/* Message Actions */
+.msg-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.2s;
+  padding: 0 4px;
+}
+.msg-group:hover .msg-actions { opacity: 1; }
+.msg-action-btn {
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--text-dim);
+  font-size: 11px;
+  cursor: pointer;
+  transition: 0.2s;
+  font-family: var(--font-mono);
+  display: flex; align-items: center; gap: 5px;
+}
+.msg-action-btn:hover { color: var(--text); border-color: var(--border-hi); }
+.msg-action-btn.liked { color: var(--green); border-color: rgba(0,255,163,0.3); }
+.msg-action-btn.disliked { color: var(--red); border-color: rgba(255,59,92,0.3); }
+
+/* ─── THINKING INDICATOR ─────────────────────────────────────────────── */
+.thinking-bubble {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 12px 16px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 4px 14px 14px 14px;
+  width: fit-content;
+}
+.thinking-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--cyan);
+  animation: thinking 1.2s ease-in-out infinite;
+}
+.thinking-dot:nth-child(2) { animation-delay: 0.2s; }
+.thinking-dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes thinking {
+  0%,100% { opacity: 0.3; transform: scale(0.8); }
+  50%      { opacity: 1; transform: scale(1); }
+}
+
+/* ─── STREAMING CURSOR ─────────────────────────────────────────────── */
+.stream-cursor {
+  display: inline-block;
+  width: 2px; height: 14px;
+  background: var(--cyan);
+  margin-left: 2px;
+  border-radius: 1px;
+  vertical-align: middle;
+  animation: blink 0.8s step-end infinite;
+}
+@keyframes blink {
+  0%,100% { opacity: 1; }
+  50%      { opacity: 0; }
+}
+
+/* ─── INPUT AREA ─────────────────────────────────────────────────────── */
+.input-zone {
+  padding: 16px max(5%, 40px) 24px;
+  background: linear-gradient(transparent, var(--void) 40%);
+  flex-shrink: 0;
+}
+.input-container {
+  background: var(--panel);
+  border: 1px solid var(--border-hi);
+  border-radius: 18px;
+  overflow: hidden;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.input-container:focus-within {
+  border-color: rgba(0,229,255,0.35);
+  box-shadow: 0 0 0 3px rgba(0,229,255,0.06), 0 4px 24px rgba(0,0,0,0.3);
+}
+.input-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 14px 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 0;
+}
+.toolbar-btn {
+  padding: 5px 10px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-dim);
+  font-size: 12px;
+  cursor: pointer;
+  transition: 0.2s;
+  font-family: var(--font-mono);
+  display: flex; align-items: center; gap: 5px;
+}
+.toolbar-btn:hover { background: rgba(255,255,255,0.05); color: var(--text); border-color: var(--border); }
+.toolbar-btn.active { color: var(--cyan); background: var(--cyan-dim); border-color: rgba(0,229,255,0.2); }
+.toolbar-sep { width: 1px; height: 18px; background: var(--border); margin: 0 4px; }
+
+.input-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  padding: 10px 14px;
+}
+.input-field {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-bright);
+  font-size: 15px;
+  font-family: var(--font-body);
+  resize: none;
+  max-height: 200px;
+  min-height: 24px;
+  line-height: 1.5;
+  overflow-y: auto;
+}
+.input-field::placeholder { color: var(--text-dim); }
+.input-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.char-counter {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-dim);
+}
+.send-btn {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(135deg, var(--cyan), var(--violet));
+  color: var(--void);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+  transition: all 0.2s;
+  flex-shrink: 0;
+  box-shadow: 0 2px 12px var(--cyan-glow);
+}
+.send-btn:hover { transform: scale(1.08); box-shadow: 0 4px 20px var(--cyan-glow); }
+.send-btn:active { transform: scale(0.95); }
+.send-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+.stop-btn {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--red);
+  background: rgba(255,59,92,0.1);
+  color: var(--red);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px;
+  transition: 0.2s;
+  flex-shrink: 0;
+}
+.stop-btn:hover { background: rgba(255,59,92,0.2); }
+.input-hints {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 14px 8px;
+  border-top: 1px solid var(--border);
+}
+.hint-chip {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-dim);
+}
+.hint-key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 6px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-size: 10px;
+}
+
+/* ─── RIGHT PANEL ──────────────────────────────────────────────────── */
+.right-panel {
+  width: var(--panel-w);
+  flex-shrink: 0;
+  background: var(--deep);
+  border-left: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: width 0.3s var(--transition), opacity 0.3s;
+}
+.right-panel.collapsed { width: 0; opacity: 0; pointer-events: none; }
+
+.panel-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  padding: 0 16px;
+  gap: 0;
+}
+.panel-tab {
+  padding: 14px 14px 12px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-dim);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: 0.2s;
+  margin-bottom: -1px;
+  white-space: nowrap;
+}
+.panel-tab.active { color: var(--cyan); border-bottom-color: var(--cyan); }
+.panel-tab:hover:not(.active) { color: var(--text-soft); }
+
+.panel-body { flex: 1; overflow-y: auto; padding: 20px 16px; display: flex; flex-direction: column; gap: 16px; }
+.panel-section-title {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+/* System prompt area */
+.system-prompt-area {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.system-prompt-area textarea {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  resize: none;
+  height: 100px;
+  line-height: 1.6;
+  width: 100%;
+}
+.system-prompt-area textarea::placeholder { color: var(--text-dim); }
+
+/* Settings sliders */
+.setting-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.setting-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: var(--text-soft);
+  font-family: var(--font-mono);
+}
+.setting-value {
+  color: var(--cyan);
+  font-size: 12px;
+}
+input[type="range"] {
+  width: 100%;
+  height: 4px;
+  -webkit-appearance: none;
+  background: var(--border);
+  border-radius: 99px;
+  outline: none;
+  cursor: pointer;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: var(--cyan);
+  cursor: pointer;
+  box-shadow: 0 0 8px var(--cyan-glow);
+  transition: 0.15s;
+}
+input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+
+/* Stats panel */
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.stat-icon {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+.stat-icon.cyan { background: var(--cyan-dim); color: var(--cyan); border: 1px solid rgba(0,229,255,0.2); }
+.stat-icon.green { background: var(--green-dim); color: var(--green); border: 1px solid rgba(0,255,163,0.2); }
+.stat-icon.violet { background: var(--violet-dim); color: var(--violet); border: 1px solid rgba(139,92,246,0.2); }
+.stat-icon.gold { background: rgba(255,209,102,0.08); color: var(--gold); border: 1px solid rgba(255,209,102,0.2); }
+.stat-label { font-size: 11px; color: var(--text-dim); font-family: var(--font-mono); }
+.stat-value { font-family: var(--font-display); font-size: 18px; font-weight: 700; color: var(--text-bright); }
+
+/* Token meter */
+.token-bar-wrap { background: var(--border); border-radius: 99px; height: 6px; overflow: hidden; }
+.token-bar-fill { height: 100%; background: linear-gradient(90deg, var(--cyan), var(--violet)); border-radius: 99px; transition: width 0.5s; }
+
+/* ─── TOASTS ────────────────────────────────────────────────────────── */
+.toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 1000;
+  pointer-events: none;
+}
+.toast {
+  background: var(--panel);
+  border: 1px solid var(--border-hi);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--text);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  pointer-events: all;
+  animation: toast-in 0.3s var(--transition);
+  min-width: 200px;
+}
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(10px) scale(0.95); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.toast.out { animation: toast-out 0.3s var(--transition) forwards; }
+@keyframes toast-out {
+  to { opacity: 0; transform: translateY(10px) scale(0.95); }
+}
+.toast-icon { font-size: 14px; }
+.toast.success .toast-icon { color: var(--green); }
+.toast.error   .toast-icon { color: var(--red); }
+.toast.info    .toast-icon { color: var(--cyan); }
+
+/* ─── SEARCH OVERLAY ─────────────────────────────────────────────────── */
+.search-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(8,8,10,0.8);
+  backdrop-filter: blur(12px);
+  z-index: 200;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 80px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+.search-overlay.visible { opacity: 1; pointer-events: all; }
+.search-box {
+  background: var(--panel);
+  border: 1px solid var(--border-hi);
+  border-radius: var(--radius-lg);
+  width: 560px;
+  max-width: 90vw;
+  overflow: hidden;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.5);
+  transform: translateY(-10px) scale(0.98);
+  transition: transform 0.25s var(--transition);
+}
+.search-overlay.visible .search-box { transform: translateY(0) scale(1); }
+.search-input-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+}
+.search-input-row i { color: var(--text-dim); font-size: 14px; }
+.search-input-row input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-bright);
+  font-size: 15px;
+  font-family: var(--font-body);
+}
+.search-results { max-height: 360px; overflow-y: auto; padding: 8px; }
+.search-result {
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.search-result:hover { background: rgba(255,255,255,0.04); }
+.search-result-icon { color: var(--text-dim); font-size: 13px; width: 16px; text-align: center; }
+.search-result-title { font-size: 13px; color: var(--text); }
+.search-result-meta { font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); margin-top: 2px; }
+.search-empty { text-align: center; padding: 32px; color: var(--text-dim); font-size: 13px; }
+
+/* ─── CONTEXT MENU ───────────────────────────────────────────────────── */
+.context-menu {
+  position: fixed;
+  background: var(--panel);
+  border: 1px solid var(--border-hi);
+  border-radius: var(--radius);
+  padding: 6px;
+  z-index: 300;
+  min-width: 160px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  display: none;
+}
+.context-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  color: var(--text-soft);
+  cursor: pointer;
+  transition: 0.15s;
+}
+.context-item:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+.context-item.danger { color: var(--red); }
+.context-item.danger:hover { background: rgba(255,59,92,0.1); }
+.context-sep { height: 1px; background: var(--border); margin: 4px 0; }
+
+/* ─── MISC ───────────────────────────────────────────────────────────── */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.5px;
+}
+.tag.cyan { background: var(--cyan-dim); color: var(--cyan); border: 1px solid rgba(0,229,255,0.2); }
+.tag.green { background: var(--green-dim); color: var(--green); border: 1px solid rgba(0,255,163,0.2); }
+.tag.violet { background: var(--violet-dim); color: var(--violet); border: 1px solid rgba(139,92,246,0.2); }
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-dim);
+  padding: 4px 0;
+}
+.divider::before, .divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* ─── COMMAND PALETTE ────────────────────────────────────────────────── */
+.palette-cmd {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 18px;
+  border-top: 1px solid var(--border);
+}
+.palette-cmd-list {
+  display: flex;
+  gap: 16px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-dim);
+}
+.palette-cmd-list span { display: flex; align-items: center; gap: 5px; }
+
+/* ─── RESPONSIVE ─────────────────────────────────────────────────────── */
+@media (max-width: 1100px) {
+  .right-panel { display: none; }
+}
+@media (max-width: 700px) {
+  .sidebar { position: fixed; left: 0; top: 0; bottom: 0; z-index: 100; transform: translateX(-100%); transition: transform 0.3s; }
+  .sidebar.mobile-open { transform: translateX(0); }
+  .messages-container { padding: 20px 16px; }
+  .input-zone { padding: 12px 16px 20px; }
+  .quick-actions { grid-template-columns: 1fr; }
+}
+
+/* ─── FILE CHIP ───────────────────────────────────────────────────────── */
+.file-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 0 14px 8px;
+}
+.file-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 12px;
+  color: var(--text-soft);
+  font-family: var(--font-mono);
+}
+.file-chip-remove {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  padding: 0;
+  font-size: 11px;
+  line-height: 1;
+  margin-left: 2px;
+}
+.file-chip-remove:hover { color: var(--red); }
+</style>
 </head>
 <body>
 
-    <div id="auth-container">
-        <div class="auth-box">
-            <h2 id="auth-title">HackerAI Giriş</h2>
-            <button class="google-btn" id="google-login-btn">
-                <svg width="18" height="18" viewBox="0 0 18 18"><path d="M17.64 9.2c0-.63-.06-1.25-.16-1.84H9v3.47h4.84c-.21 1.12-.84 2.07-1.79 2.7l2.78 2.16c1.63-1.5 2.57-3.7 2.57-6.3h-.1z" fill="#4285F4"/><path d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.78-2.16c-.77.52-1.76.83-2.92.83-2.25 0-4.16-1.52-4.84-3.57L1.57 13c1.48 2.95 4.53 5 8.1 5z" fill="#34A853"/><path d="M4.16 10.92c-.17-.52-.27-1.07-.27-1.64s.1-1.12.27-1.64V5.47L1.31 3.73C.47 5.42 0 7.3 0 9.3s.47 3.88 1.31 5.57l2.85-2.23-.0z" fill="#FBBC05"/><path d="M9 3.58c1.32 0 2.5.45 3.44 1.35L15 2.4C13.46.98 11.42 0 9 0 5.43 0 2.38 2.05.9 5z" fill="#EA4335"/></svg>
-                Google ile Devam Et
+<!-- Background -->
+<div class="bg-grid"></div>
+<div class="aurora">
+  <div class="aurora-blob"></div>
+  <div class="aurora-blob"></div>
+  <div class="aurora-blob"></div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Search Overlay -->
+<div class="search-overlay" id="searchOverlay" onclick="if(event.target===this)closeSearch()">
+  <div class="search-box">
+    <div class="search-input-row">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" id="searchInput" placeholder="Sohbet veya mesaj ara..." oninput="doSearch(this.value)">
+      <span class="tag cyan">ESC</span>
+    </div>
+    <div class="search-results" id="searchResults">
+      <div class="search-empty">Aramak için yazmaya başla</div>
+    </div>
+    <div class="palette-cmd">
+      <div class="palette-cmd-list">
+        <span><span class="hint-key">↵</span> Aç</span>
+        <span><span class="hint-key">↑↓</span> Gezin</span>
+        <span><span class="hint-key">Esc</span> Kapat</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Context Menu -->
+<div class="context-menu" id="contextMenu">
+  <div class="context-item" onclick="ctxRename()"><i class="fa-solid fa-pen fa-fw"></i> Yeniden Adlandır</div>
+  <div class="context-item" onclick="ctxPin()"><i class="fa-solid fa-thumbtack fa-fw"></i> Sabitle</div>
+  <div class="context-sep"></div>
+  <div class="context-item danger" onclick="ctxDelete()"><i class="fa-solid fa-trash fa-fw"></i> Sil</div>
+</div>
+
+<div class="app-shell">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+
+    <div class="logo-area">
+      <div class="logo-icon"><i class="fa-solid fa-microchip"></i></div>
+      <div>
+        <div class="logo-text">Neural<span>OS</span></div>
+        <div class="logo-version">AI CORE v5.0</div>
+      </div>
+    </div>
+
+    <button class="new-chat-btn" onclick="createNewChat()">
+      <i class="fa-solid fa-plus"></i>
+      Yeni Sohbet
+      <span class="tag cyan" style="margin-left:auto; font-size:9px">⌘N</span>
+    </button>
+
+    <div class="section-label">Sohbetler</div>
+
+    <div class="chat-list" id="chatList"></div>
+
+    <div class="sidebar-footer">
+      <button class="sidebar-footer-btn" onclick="openSearch()">
+        <i class="fa-solid fa-magnifying-glass"></i> Sohbet Ara
+        <span style="margin-left:auto; font-family:var(--font-mono); font-size:10px; color:var(--text-dim)">⌘K</span>
+      </button>
+      <button class="sidebar-footer-btn" onclick="exportAllChats()">
+        <i class="fa-solid fa-download"></i> Dışa Aktar
+      </button>
+      <button class="sidebar-footer-btn" onclick="clearAll()">
+        <i class="fa-solid fa-trash"></i> Tümünü Temizle
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN CHAT -->
+  <main class="main-chat">
+
+    <!-- Topbar -->
+    <header class="topbar">
+      <button class="topbar-toggle" onclick="toggleSidebar()" data-tooltip="Kenar çubuğu">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+
+      <div class="topbar-title" id="topbarTitle">NeuralOS</div>
+
+      <div class="model-selector" id="modelSelector" onclick="toggleModelDropdown()">
+        <div class="model-dot"></div>
+        <span class="model-name" id="modelName">qwen2.5-coder:1.5b</span>
+        <i class="fa-solid fa-chevron-down" style="font-size:9px; color:var(--text-dim)"></i>
+        <div class="model-dropdown" id="modelDropdown">
+          <div class="model-option selected" onclick="selectModel('qwen2.5-coder:1.5b', this)">
+            qwen2.5-coder:1.5b <span class="model-tag">FAST</span>
+          </div>
+          <div class="model-option" onclick="selectModel('qwen2.5-coder:7b', this)">
+            qwen2.5-coder:7b
+          </div>
+          <div class="model-option" onclick="selectModel('llama3.2:3b', this)">
+            llama3.2:3b
+          </div>
+          <div class="model-option" onclick="selectModel('mistral:7b', this)">
+            mistral:7b
+          </div>
+          <div class="model-option" onclick="selectModel('deepseek-coder:1.3b', this)">
+            deepseek-coder:1.3b <span class="model-tag">CODE</span>
+          </div>
+          <div class="model-option" onclick="selectModel('phi3:mini', this)">
+            phi3:mini
+          </div>
+        </div>
+      </div>
+
+      <div class="topbar-badge" id="statusBadge">OLLAMA AKTİF</div>
+
+      <div class="topbar-actions">
+        <button class="topbar-action-btn" data-tooltip="Ara" onclick="openSearch()">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+        <button class="topbar-action-btn" data-tooltip="Sohbeti Paylaş" onclick="shareChat()">
+          <i class="fa-solid fa-share-nodes"></i>
+        </button>
+        <button class="topbar-action-btn" data-tooltip="Sağ Panel" onclick="toggleRightPanel()" id="rightPanelToggle">
+          <i class="fa-solid fa-sliders"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Messages -->
+    <div class="messages-container" id="messagesContainer">
+      <!-- Welcome Screen -->
+      <div class="welcome-screen" id="welcomeScreen">
+        <div class="welcome-orb"><i class="fa-solid fa-microchip"></i></div>
+        <div>
+          <div class="welcome-title">Merhaba, <em>Kral.</em></div>
+          <div class="welcome-title" style="font-size:24px; color:var(--text-soft);">Bugün ne inşa ediyoruz?</div>
+        </div>
+        <div class="welcome-sub">Kod yaz, hata ayıkla, sistem tasarla — NeuralOS her zaman hazır.</div>
+        <div class="quick-actions">
+          <div class="quick-action" onclick="quickPrompt('Python ile bir REST API yaz, FastAPI kullan')">
+            <div class="qa-icon">⚡</div>
+            <div class="qa-title">REST API Oluştur</div>
+            <div class="qa-sub">FastAPI ile hızlı backend geliştir</div>
+          </div>
+          <div class="quick-action" onclick="quickPrompt('Bu kodu incele ve hataları düzelt:\n')">
+            <div class="qa-icon">🔍</div>
+            <div class="qa-title">Kod İncele</div>
+            <div class="qa-sub">Bug tespiti ve optimizasyon</div>
+          </div>
+          <div class="quick-action" onclick="quickPrompt('Linux terminal komutlarını açıkla: ')">
+            <div class="qa-icon">💻</div>
+            <div class="qa-title">Terminal Rehberi</div>
+            <div class="qa-sub">Bash komutlarını öğren</div>
+          </div>
+          <div class="quick-action" onclick="quickPrompt('Modern bir web sitesi için HTML, CSS ve JS kodu yaz')">
+            <div class="qa-icon">🌐</div>
+            <div class="qa-title">Web Geliştir</div>
+            <div class="qa-sub">HTML/CSS/JS ile site oluştur</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Input Zone -->
+    <div class="input-zone">
+      <div class="input-container">
+        <div class="input-toolbar">
+          <button class="toolbar-btn active" id="tbNormal" onclick="setMode('normal')">
+            <i class="fa-solid fa-comment"></i> Normal
+          </button>
+          <button class="toolbar-btn" id="tbCode" onclick="setMode('code')">
+            <i class="fa-solid fa-code"></i> Kod
+          </button>
+          <button class="toolbar-btn" id="tbCreative" onclick="setMode('creative')">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> Yaratıcı
+          </button>
+          <div class="toolbar-sep"></div>
+          <button class="toolbar-btn" onclick="triggerFileUpload()" title="Dosya Ekle">
+            <i class="fa-solid fa-paperclip"></i>
+          </button>
+          <button class="toolbar-btn" id="tbStream" onclick="toggleStreaming()" title="Streaming">
+            <i class="fa-solid fa-bolt"></i> Stream
+          </button>
+          <div id="fileChipsPreview"></div>
+        </div>
+
+        <div class="file-chips" id="fileChips" style="display:none"></div>
+
+        <div class="input-row">
+          <textarea
+            class="input-field"
+            id="userInput"
+            placeholder="Sorunu sor, kod yaz, sistemi hackle..."
+            rows="1"
+            oninput="autoResize(this); updateCharCounter(this)"
+            onkeydown="handleKeyDown(event)"
+          ></textarea>
+          <div class="input-right">
+            <span class="char-counter" id="charCounter">0</span>
+            <button class="send-btn" id="sendBtn" onclick="handleSend()">
+              <i class="fa-solid fa-paper-plane"></i>
             </button>
-            <div class="divider">veya</div>
-            <input type="email" id="auth-email" placeholder="E-posta Adresi">
-            <input type="password" id="auth-password" placeholder="Şifre">
-            <button class="auth-btn" id="auth-submit-btn">Giriş Yap</button>
-            <span class="toggle-link" id="auth-toggle">Hesabın yok mu? Kayıt Ol</span>
+            <button class="stop-btn" id="stopBtn" style="display:none" onclick="stopGeneration()">
+              <i class="fa-solid fa-stop"></i>
+            </button>
+          </div>
         </div>
+
+        <div class="input-hints">
+          <div class="hint-chip"><span class="hint-key">Enter</span> Gönder</div>
+          <div class="hint-chip"><span class="hint-key">Shift+Enter</span> Yeni Satır</div>
+          <div class="hint-chip"><span class="hint-key">⌘K</span> Arama</div>
+          <div class="hint-chip"><span class="hint-key">⌘N</span> Yeni Chat</div>
+        </div>
+      </div>
     </div>
 
-    <div id="sidebar">
-        <button class="new-chat-btn" id="new-chat-btn">+ Yeni Sohbet</button>
-        <div id="history-list"></div>
-        <button class="logout-btn" id="logout-btn">Oturumu Kapat</button>
-        <div class="sidebar-footer">HackerAI Core v4 // Ctrl+Q</div>
+  </main>
+
+  <!-- RIGHT PANEL -->
+  <aside class="right-panel" id="rightPanel">
+    <div class="panel-tabs">
+      <div class="panel-tab active" onclick="switchPanelTab(this,'settings')" data-panel="settings">Ayarlar</div>
+      <div class="panel-tab" onclick="switchPanelTab(this,'stats')" data-panel="stats">İstatistik</div>
+      <div class="panel-tab" onclick="switchPanelTab(this,'system')" data-panel="system">Sistem</div>
     </div>
 
-    <div id="main-content">
-        <div id="top-bar">
-            <div style="font-weight: bold; font-size: 18px; letter-spacing: 1px;">HackerAI</div>
-            <div id="status-indicator" style="color: #8e918f; font-size: 14px;">Sistem: Hazır</div>
+    <!-- Settings Tab -->
+    <div class="panel-body" id="panelSettings">
+      <div>
+        <div class="panel-section-title">Model Parametreleri</div>
+        <div class="setting-row">
+          <div class="setting-label">Sıcaklık (Temperature) <span class="setting-value" id="tempVal">0.7</span></div>
+          <input type="range" min="0" max="2" step="0.1" value="0.7" oninput="updateSetting('tempVal', this.value)">
         </div>
-        <div id="chat-window"></div>
-        <div id="input-area-container">
-            <div id="input-wrapper">
-                <label class="icon-btn" title="Görsel Yükle">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-4.86 8.86l-3 3.87L9 13.14 6 17h12l-3.86-5.14z"/></svg>
-                    <input type="file" id="image-input" accept="image/*" style="display: none;">
-                </label>
-                <textarea id="user-prompt" placeholder="Qwen'a bir şeyler sor..."></textarea>
-                <button class="icon-btn" id="send-btn" title="Gönder">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
-                </button>
-            </div>
-            <div id="preview-area" style="margin-top: 8px; padding-left: 20px;"></div>
+      </div>
+      <div class="setting-row">
+        <div class="setting-label">Top P <span class="setting-value" id="topPVal">0.9</span></div>
+        <input type="range" min="0" max="1" step="0.05" value="0.9" oninput="updateSetting('topPVal', this.value)">
+      </div>
+      <div class="setting-row">
+        <div class="setting-label">Top K <span class="setting-value" id="topKVal">40</span></div>
+        <input type="range" min="1" max="100" step="1" value="40" oninput="updateSetting('topKVal', this.value)">
+      </div>
+      <div class="setting-row">
+        <div class="setting-label">Max Tokens <span class="setting-value" id="maxTokVal">2048</span></div>
+        <input type="range" min="256" max="8192" step="256" value="2048" oninput="updateSetting('maxTokVal', this.value)">
+      </div>
+      <div class="setting-row">
+        <div class="setting-label">Repeat Penalty <span class="setting-value" id="repPenVal">1.1</span></div>
+        <input type="range" min="1" max="2" step="0.05" value="1.1" oninput="updateSetting('repPenVal', this.value)">
+      </div>
+
+      <div>
+        <div class="panel-section-title" style="margin-bottom:10px">Ollama Endpoint</div>
+        <div class="system-prompt-area" style="padding:8px 12px;">
+          <input type="text" id="ollamaEndpoint" value="http://127.0.0.1:11434" style="background:transparent;border:none;outline:none;color:var(--text);font-family:var(--font-mono);font-size:12px;width:100%">
         </div>
+      </div>
     </div>
 
-    <div id="admin-modal">
-        <div class="modal-box">
-            <h3 style="color: var(--accent); margin-top:0; font-family: monospace;">CRITICAL ACCESS</h3>
-            <input type="password" id="admin-pass" placeholder="Şifre">
-            <br>
-            <button class="new-chat-btn" id="auth-btn" style="background: var(--accent); border:none; padding: 8px 20px; margin:0;">Giriş Yap</button>
+    <!-- Stats Tab -->
+    <div class="panel-body" id="panelStats" style="display:none">
+      <div class="stat-card">
+        <div class="stat-icon cyan"><i class="fa-solid fa-message"></i></div>
+        <div>
+          <div class="stat-label">TOPLAM MESAJ</div>
+          <div class="stat-value" id="statMessages">0</div>
         </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon green"><i class="fa-solid fa-font"></i></div>
+        <div>
+          <div class="stat-label">TOPLAM TOKEN</div>
+          <div class="stat-value" id="statTokens">0</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon violet"><i class="fa-solid fa-comments"></i></div>
+        <div>
+          <div class="stat-label">SOHBET SAYISI</div>
+          <div class="stat-value" id="statChats">0</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon gold"><i class="fa-solid fa-clock"></i></div>
+        <div>
+          <div class="stat-label">SON YANIT SÜRESİ</div>
+          <div class="stat-value" id="statLastTime">—</div>
+        </div>
+      </div>
+      <div>
+        <div class="panel-section-title" style="margin-bottom:8px">Context Kullanımı</div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:11px;color:var(--text-dim);font-family:var(--font-mono)">
+          <span id="contextUsed">0</span> / <span id="contextMax">4096</span>
+        </div>
+        <div class="token-bar-wrap"><div class="token-bar-fill" id="tokenBarFill" style="width:0%"></div></div>
+      </div>
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+    <!-- System Tab -->
+    <div class="panel-body" id="panelSystem" style="display:none">
+      <div>
+        <div class="panel-section-title" style="margin-bottom:10px">Sistem Prompt</div>
+        <div class="system-prompt-area">
+          <textarea id="systemPrompt" placeholder="Asistan için sistem talimatları...">Sen NeuralOS adlı gelişmiş bir AI asistansın. Türkçe cevap ver. Teknik konularda uzman, yazılım geliştirme, hacking, sistem yönetimi konularında yardımcı ol. Kullanıcıya 'kral' diye hitap edebilirsin.</textarea>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-family:var(--font-mono);font-size:10px;color:var(--text-dim)" id="sysPromptLen">0 karakter</span>
+            <button class="toolbar-btn" onclick="saveSystemPrompt()"><i class="fa-solid fa-check"></i> Kaydet</button>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="panel-section-title" style="margin-bottom:8px">Hızlı Promptlar</div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div class="context-item" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius)" onclick="injectPrompt('Kodu adım adım açıkla ve her satırı yorum satırıyla belgele.')">
+            📝 Kodu Açıkla
+          </div>
+          <div class="context-item" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius)" onclick="injectPrompt('Bu kodu optimize et. Zaman ve bellek karmaşıklığını iyileştir.')">
+            ⚡ Kodu Optimize Et
+          </div>
+          <div class="context-item" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius)" onclick="injectPrompt('Unit testleri yaz. Her fonksiyon için en az 3 test durumu ekle.')">
+            🧪 Test Yaz
+          </div>
+          <div class="context-item" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius)" onclick="injectPrompt('Güvenlik açıklarını analiz et ve düzeltme öner.')">
+            🔒 Güvenlik Analizi
+          </div>
+          <div class="context-item" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius)" onclick="injectPrompt('Bu fikri detaylıca açıkla. Avantajları ve dezavantajlarıyla değerlendir.')">
+            💡 Fikri Değerlendir
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
 
-        // Senin Firebase Proje Bilgilerin
-        const firebaseConfig = {
-            apiKey: "AIzaSyDHLts0hwnw1TzCddyAKb4vwrfWxaPGQAA",
-            authDomain: "hackerai-93c7d.firebaseapp.com",
-            projectId: "hackerai-93c7d",
-            storageBucket: "hackerai-93c7d.firebasestorage.app",
-            messagingSenderId: "644965623288",
-            appId: "1:644965623288:web:3e3f8514da4ddc7f58e20d",
-            measurementId: "G-SFBXHW3PJ2"
-        };
+</div>
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const googleProvider = new GoogleAuthProvider();
+<!-- Hidden file input -->
+<input type="file" id="fileInput" multiple style="display:none" onchange="handleFiles(this.files)">
 
-        // Tarayıcı Engellerini Aşmak İçin Localhost / 127.0.0.1 Kullanıyoruz
-        const OLLAMA_TARGET = "http://192.168.1.104:11434"; 
-        const DEFAULT_MODEL = "qwen2.5:1.5b-instruct-q2_K"; 
-        const VISION_MODEL = "qwen2.5-vl";
+<script>
+/* ─────────────────────────────────────────────────────────────────
+   STATE
+───────────────────────────────────────────────────────────────── */
+const OLLAMA_DEFAULT = "http://127.0.0.1:11434";
+let MODEL_NAME = "qwen2.5-coder:1.5b";
+let chats = {};
+let currentChatId = null;
+let isGenerating = false;
+let abortController = null;
+let streamingEnabled = true;
+let currentMode = 'normal';
+let stats = { messages: 0, tokens: 0, lastTime: 0 };
+let ctxTargetChatId = null;
+let attachedFiles = [];
 
-        const authContainer = document.getElementById('auth-container');
-        const authTitle = document.getElementById('auth-title');
-        const authEmail = document.getElementById('auth-email');
-        const authPassword = document.getElementById('auth-password');
-        const authSubmitBtn = document.getElementById('auth-submit-btn');
-        const googleLoginBtn = document.getElementById('google-login-btn');
-        const authToggle = document.getElementById('auth-toggle');
-        const logoutBtn = document.getElementById('logout-btn');
-        const chatWindow = document.getElementById('chat-window');
-        const userPrompt = document.getElementById('user-prompt');
-        const sendBtn = document.getElementById('send-btn');
-        const imageInput = document.getElementById('image-input');
-        const previewArea = document.getElementById('preview-area');
-        const statusIndicator = document.getElementById('status-indicator');
-        const historyList = document.getElementById('history-list');
-        const newChatBtn = document.getElementById('new-chat-btn');
-        const adminModal = document.getElementById('admin-modal');
-        const adminPass = document.getElementById('admin-pass');
-        const authBtn = document.getElementById('auth-btn');
+/* ─────────────────────────────────────────────────────────────────
+   INIT
+───────────────────────────────────────────────────────────────── */
+function init() {
+  loadStorage();
+  renderChatList();
+  if (currentChatId && chats[currentChatId]) {
+    loadChat(currentChatId);
+  }
+  updateStats();
+  setupSysPromptCounter();
+  checkOllamaStatus();
+  setupContextMenu();
+  // keyboard shortcuts
+  document.addEventListener('keydown', handleGlobalKey);
+  // click outside model dropdown
+  document.addEventListener('click', e => {
+    if (!document.getElementById('modelSelector').contains(e.target)) {
+      document.getElementById('modelSelector').classList.remove('open');
+    }
+  });
+}
 
-        let currentUser = null;
-        let isSignUpMode = false;
-        let isAdmin = false;
-        let selectedImageBase64 = null;
-        let currentChatId = null;
-        let userChats = {}; // Tüm sohbetlerin tutulduğu ana nesne
+function loadStorage() {
+  try {
+    chats = JSON.parse(localStorage.getItem('nos_chats')) || {};
+    currentChatId = localStorage.getItem('nos_current') || null;
+    stats = JSON.parse(localStorage.getItem('nos_stats')) || { messages: 0, tokens: 0, lastTime: 0 };
+    MODEL_NAME = localStorage.getItem('nos_model') || MODEL_NAME;
+    const sp = localStorage.getItem('nos_sysprompt');
+    if (sp) document.getElementById('systemPrompt').value = sp;
+    const ep = localStorage.getItem('nos_endpoint');
+    if (ep) document.getElementById('ollamaEndpoint').value = ep;
+    const se = localStorage.getItem('nos_stream');
+    if (se !== null) streamingEnabled = se === 'true';
+    document.getElementById('modelName').textContent = MODEL_NAME;
+    updateStreamBtn();
+  } catch(e) {}
+}
 
-        googleLoginBtn.addEventListener('click', async () => {
-            try { await signInWithPopup(auth, googleProvider); } catch (err) { alert("Google Hata: " + err.message); }
-        });
+function saveStorage() {
+  localStorage.setItem('nos_chats', JSON.stringify(chats));
+  localStorage.setItem('nos_current', currentChatId);
+  localStorage.setItem('nos_stats', JSON.stringify(stats));
+  localStorage.setItem('nos_model', MODEL_NAME);
+}
 
-        authToggle.addEventListener('click', () => {
-            isSignUpMode = !isSignUpMode;
-            authTitle.textContent = isSignUpMode ? "HackerAI Kayıt Ol" : "HackerAI Giriş";
-            authSubmitBtn.textContent = isSignUpMode ? "Kayıt Ol" : "Giriş Yap";
-            authToggle.textContent = isSignUpMode ? "Zaten hesabın var mı? Giriş Yap" : "Hesabın yok mu? Kayıt Ol";
-        });
+/* ─────────────────────────────────────────────────────────────────
+   OLLAMA STATUS
+───────────────────────────────────────────────────────────────── */
+async function checkOllamaStatus() {
+  const badge = document.getElementById('statusBadge');
+  const ep = getEndpoint();
+  try {
+    const r = await fetch(`${ep}/api/tags`, { signal: AbortSignal.timeout(3000) });
+    if (r.ok) {
+      badge.style.background = 'var(--green-dim)';
+      badge.style.border = '1px solid rgba(0,255,163,0.2)';
+      badge.style.color = 'var(--green)';
+      badge.textContent = 'OLLAMA AKTİF';
+    } else { throw new Error(); }
+  } catch {
+    badge.style.background = 'rgba(255,59,92,0.08)';
+    badge.style.border = '1px solid rgba(255,59,92,0.2)';
+    badge.style.color = 'var(--red)';
+    badge.textContent = 'OLLAMA ÇEVRIMDIŞI';
+  }
+}
 
-        authSubmitBtn.addEventListener('click', async () => {
-            const email = authEmail.value.trim();
-            const password = authPassword.value.trim();
-            if(!email || !password) return alert("Boş alan bırakılamaz.");
-            try {
-                if(isSignUpMode) {
-                    await createUserWithEmailAndPassword(auth, email, password);
-                    alert("Kayıt başarılı!");
-                } else { await signInWithEmailAndPassword(auth, email, password); }
-            } catch (err) { alert("Hata: " + err.message); }
-        });
+function getEndpoint() {
+  return document.getElementById('ollamaEndpoint').value.trim() || OLLAMA_DEFAULT;
+}
 
-        logoutBtn.addEventListener('click', () => signOut(auth));
+/* ─────────────────────────────────────────────────────────────────
+   CHAT MANAGEMENT
+───────────────────────────────────────────────────────────────── */
+function createNewChat() {
+  const id = 'c_' + Date.now();
+  chats[id] = {
+    id,
+    title: 'Yeni Sohbet',
+    created: Date.now(),
+    messages: [],
+    pinned: false
+  };
+  currentChatId = id;
+  saveStorage();
+  renderChatList();
+  loadChat(id);
+  document.getElementById('userInput').focus();
+}
 
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                currentUser = user;
-                authContainer.style.display = 'none';
-                await loadChatsFromFirebase();
-            } else {
-                currentUser = null;
-                authContainer.style.display = 'flex';
-                chatWindow.innerHTML = '';
-                historyList.innerHTML = '';
-                userChats = {};
-                currentChatId = null;
+function loadChat(id) {
+  if (!chats[id]) return;
+  currentChatId = id;
+  localStorage.setItem('nos_current', id);
+  const container = document.getElementById('messagesContainer');
+  container.innerHTML = '';
+
+  // Welcome screen logic
+  if (chats[id].messages.length === 0) {
+    showWelcome();
+  } else {
+    chats[id].messages.forEach(msg => renderMessage(msg.role, msg.content, false));
+    scrollToBottom();
+  }
+
+  document.getElementById('topbarTitle').textContent = chats[id].title;
+  document.querySelectorAll('.chat-item').forEach(el => el.classList.remove('active'));
+  const el = document.getElementById('li_' + id);
+  if (el) el.classList.add('active');
+  updateStats();
+}
+
+function showWelcome() {
+  const container = document.getElementById('messagesContainer');
+  container.innerHTML = '';
+  const ws = document.createElement('div');
+  ws.className = 'welcome-screen';
+  ws.id = 'welcomeScreen';
+  ws.innerHTML = `
+    <div class="welcome-orb"><i class="fa-solid fa-microchip"></i></div>
+    <div>
+      <div class="welcome-title">Merhaba, <em>Kral.</em></div>
+      <div class="welcome-title" style="font-size:24px;color:var(--text-soft)">Bugün ne inşa ediyoruz?</div>
+    </div>
+    <div class="welcome-sub">Kod yaz, hata ayıkla, sistem tasarla — NeuralOS her zaman hazır.</div>
+    <div class="quick-actions">
+      <div class="quick-action" onclick="quickPrompt('Python ile bir REST API yaz, FastAPI kullan')">
+        <div class="qa-icon">⚡</div><div class="qa-title">REST API Oluştur</div><div class="qa-sub">FastAPI ile hızlı backend geliştir</div>
+      </div>
+      <div class="quick-action" onclick="quickPrompt('Bu kodu incele ve hataları düzelt:\n')">
+        <div class="qa-icon">🔍</div><div class="qa-title">Kod İncele</div><div class="qa-sub">Bug tespiti ve optimizasyon</div>
+      </div>
+      <div class="quick-action" onclick="quickPrompt('Linux terminal komutlarını açıkla: ')">
+        <div class="qa-icon">💻</div><div class="qa-title">Terminal Rehberi</div><div class="qa-sub">Bash komutlarını öğren</div>
+      </div>
+      <div class="quick-action" onclick="quickPrompt('Modern bir web sitesi için HTML, CSS ve JS kodu yaz')">
+        <div class="qa-icon">🌐</div><div class="qa-title">Web Geliştir</div><div class="qa-sub">HTML/CSS/JS ile site oluştur</div>
+      </div>
+    </div>`;
+  container.appendChild(ws);
+}
+
+function deleteChat(id) {
+  delete chats[id];
+  if (currentChatId === id) {
+    const remaining = Object.keys(chats);
+    if (remaining.length) { loadChat(remaining[remaining.length - 1]); }
+    else { createNewChat(); }
+  }
+  saveStorage();
+  renderChatList();
+  showToast('Sohbet silindi', 'success');
+}
+
+function renameChat(id) {
+  const name = prompt('Yeni isim:', chats[id]?.title || '');
+  if (name && name.trim()) {
+    chats[id].title = name.trim();
+    saveStorage();
+    renderChatList();
+    if (currentChatId === id) document.getElementById('topbarTitle').textContent = name.trim();
+  }
+}
+
+function renderChatList() {
+  const list = document.getElementById('chatList');
+  list.innerHTML = '';
+  const ids = Object.keys(chats)
+    .sort((a,b) => {
+      const pa = chats[a].pinned ? 1 : 0;
+      const pb = chats[b].pinned ? 1 : 0;
+      if (pa !== pb) return pb - pa;
+      return b.localeCompare(a);
+    });
+
+  if (!ids.length) {
+    list.innerHTML = '<div style="text-align:center;padding:20px;font-size:12px;color:var(--text-dim)">Henüz sohbet yok</div>';
+    return;
+  }
+
+  ids.forEach(id => {
+    const chat = chats[id];
+    const item = document.createElement('div');
+    item.className = 'chat-item' + (id === currentChatId ? ' active' : '');
+    item.id = 'li_' + id;
+    item.innerHTML = `
+      <i class="fa-regular fa-comment chat-item-icon"></i>
+      <span class="chat-item-text">${chat.pinned ? '📌 ' : ''}${escapeHtml(chat.title)}</span>
+      <button class="chat-item-del" onclick="event.stopPropagation(); deleteChat('${id}')" title="Sil">
+        <i class="fa-solid fa-xmark"></i>
+      </button>`;
+    item.onclick = (e) => { if (!e.target.closest('.chat-item-del')) loadChat(id); };
+    item.oncontextmenu = (e) => { e.preventDefault(); showContextMenu(e, id); };
+    list.appendChild(item);
+  });
+
+  updateStatDisplay('statChats', Object.keys(chats).length);
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   MESSAGES
+───────────────────────────────────────────────────────────────── */
+function renderMessage(role, content, animate = true) {
+  const ws = document.getElementById('welcomeScreen');
+  if (ws) ws.remove();
+
+  const container = document.getElementById('messagesContainer');
+  const group = document.createElement('div');
+  group.className = 'msg-group';
+  if (animate) group.style.animation = 'msg-in 0.3s var(--transition)';
+
+  const ts = new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+
+  group.innerHTML = `
+    <div class="msg-row ${role}">
+      ${role === 'ai' ? '<div class="msg-avatar ai-avatar"><i class="fa-solid fa-microchip"></i></div>' : ''}
+      <div class="msg-content-wrap">
+        <div class="msg-meta">
+          <span class="msg-name">${role === 'ai' ? 'NeuralOS' : 'Sen'}</span>
+          <span>${ts}</span>
+          ${role === 'ai' ? `<span class="tag cyan" style="font-size:8px">${MODEL_NAME}</span>` : ''}
+        </div>
+        <div class="msg-bubble">${formatContent(content)}</div>
+        ${role === 'ai' ? `
+        <div class="msg-actions">
+          <button class="msg-action-btn" onclick="copyMsg(this)" title="Kopyala"><i class="fa-solid fa-copy"></i></button>
+          <button class="msg-action-btn" onclick="likeMsg(this)" title="Beğen"><i class="fa-solid fa-thumbs-up"></i></button>
+          <button class="msg-action-btn" onclick="dislikeMsg(this)" title="Beğenme"><i class="fa-solid fa-thumbs-down"></i></button>
+          <button class="msg-action-btn" onclick="regenMsg(this)" title="Yeniden üret"><i class="fa-solid fa-rotate"></i></button>
+        </div>` : ''}
+      </div>
+      ${role === 'user' ? '<div class="msg-avatar user-avatar"><i class="fa-solid fa-user"></i></div>' : ''}
+    </div>`;
+
+  container.appendChild(group);
+  if (animate) scrollToBottom();
+  return group;
+}
+
+function addThinkingIndicator() {
+  const ws = document.getElementById('welcomeScreen');
+  if (ws) ws.remove();
+  const container = document.getElementById('messagesContainer');
+  const row = document.createElement('div');
+  row.className = 'msg-row ai';
+  row.id = 'thinkingRow';
+  row.innerHTML = `
+    <div class="msg-avatar ai-avatar"><i class="fa-solid fa-microchip"></i></div>
+    <div class="thinking-bubble">
+      <div class="thinking-dot"></div>
+      <div class="thinking-dot"></div>
+      <div class="thinking-dot"></div>
+    </div>`;
+  container.appendChild(row);
+  scrollToBottom();
+}
+
+function removeThinkingIndicator() {
+  const el = document.getElementById('thinkingRow');
+  if (el) el.remove();
+}
+
+function createStreamingBubble() {
+  const ws = document.getElementById('welcomeScreen');
+  if (ws) ws.remove();
+  const container = document.getElementById('messagesContainer');
+  const group = document.createElement('div');
+  group.className = 'msg-group';
+  group.id = 'streamGroup';
+  const ts = new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+  group.innerHTML = `
+    <div class="msg-row ai">
+      <div class="msg-avatar ai-avatar"><i class="fa-solid fa-microchip"></i></div>
+      <div class="msg-content-wrap">
+        <div class="msg-meta">
+          <span class="msg-name">NeuralOS</span>
+          <span>${ts}</span>
+          <span class="tag cyan" style="font-size:8px">${MODEL_NAME}</span>
+        </div>
+        <div class="msg-bubble" id="streamBubble"><span class="stream-cursor"></span></div>
+      </div>
+    </div>`;
+  container.appendChild(group);
+  scrollToBottom();
+  return document.getElementById('streamBubble');
+}
+
+function finalizeStreamGroup(fullText) {
+  const g = document.getElementById('streamGroup');
+  if (!g) return;
+  const bubble = document.getElementById('streamBubble');
+  if (bubble) bubble.innerHTML = formatContent(fullText);
+  g.removeAttribute('id');
+  const bubble2 = g.querySelector('.msg-bubble');
+  const wrap = g.querySelector('.msg-content-wrap');
+  if (wrap && !wrap.querySelector('.msg-actions')) {
+    const actions = document.createElement('div');
+    actions.className = 'msg-actions';
+    actions.innerHTML = `
+      <button class="msg-action-btn" onclick="copyMsg(this)"><i class="fa-solid fa-copy"></i></button>
+      <button class="msg-action-btn" onclick="likeMsg(this)"><i class="fa-solid fa-thumbs-up"></i></button>
+      <button class="msg-action-btn" onclick="dislikeMsg(this)"><i class="fa-solid fa-thumbs-down"></i></button>
+      <button class="msg-action-btn" onclick="regenMsg(this)"><i class="fa-solid fa-rotate"></i></button>`;
+    wrap.appendChild(actions);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   FORMAT CONTENT
+───────────────────────────────────────────────────────────────── */
+function formatContent(text) {
+  if (!text) return '';
+  let out = escapeHtml(text);
+  // code blocks
+  out = out.replace(/```(\w*)\n?([\s\S]*?)```/g, (_, lang, code) => {
+    const l = lang || 'code';
+    return `<div class="code-header">
+      <span>${l.toUpperCase()}</span>
+      <button class="copy-code-btn" onclick="copyCode(this)"><i class="fa-solid fa-copy"></i> Kopyala</button>
+    </div><pre><code>${code.trim()}</code></pre>`;
+  });
+  // inline code
+  out = out.replace(/`([^`]+)`/g, '<code>$1</code>');
+  // bold
+  out = out.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  // italic
+  out = out.replace(/\*(.*?)\*/g, '<em>$1</em>');
+  // paragraphs / newlines
+  out = out.replace(/\n\n/g, '</p><p>');
+  out = out.replace(/\n/g, '<br>');
+  out = '<p>' + out + '</p>';
+  return out;
+}
+
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   SEND / GENERATE
+───────────────────────────────────────────────────────────────── */
+async function handleSend() {
+  if (isGenerating) return;
+  const input = document.getElementById('userInput');
+  let text = input.value.trim();
+  if (!text && !attachedFiles.length) return;
+
+  // Attach file content if any
+  if (attachedFiles.length) {
+    const fileTexts = attachedFiles.map(f => `[Dosya: ${f.name}]\n${f.content}`).join('\n\n');
+    text = text ? `${fileTexts}\n\n${text}` : fileTexts;
+    attachedFiles = [];
+    document.getElementById('fileChips').innerHTML = '';
+    document.getElementById('fileChips').style.display = 'none';
+  }
+
+  input.value = '';
+  autoResize(input);
+  updateCharCounter(input);
+
+  if (!currentChatId || !chats[currentChatId]) createNewChat();
+
+  renderMessage('user', text);
+  chats[currentChatId].messages.push({ role: 'user', content: text });
+
+  if (chats[currentChatId].title === 'Yeni Sohbet') {
+    chats[currentChatId].title = text.slice(0, 28) + (text.length > 28 ? '…' : '');
+    document.getElementById('topbarTitle').textContent = chats[currentChatId].title;
+    renderChatList();
+  }
+
+  saveStorage();
+  await generateResponse(text);
+}
+
+async function generateResponse(userText) {
+  isGenerating = true;
+  setGeneratingUI(true);
+  const startTime = Date.now();
+
+  const systemPrompt = document.getElementById('systemPrompt').value.trim();
+  const temperature = parseFloat(document.getElementById('tempVal')?.textContent || 0.7);
+  const ep = getEndpoint();
+
+  // Build full prompt with conversation history
+  const history = chats[currentChatId].messages;
+  let fullPrompt = systemPrompt ? `${systemPrompt}\n\n` : '';
+  const recentHistory = history.slice(-20); // last 20 messages for context
+  recentHistory.forEach(m => {
+    if (m.role === 'user') fullPrompt += `Kullanıcı: ${m.content}\n`;
+    else fullPrompt += `Asistan: ${m.content}\n`;
+  });
+  fullPrompt += 'Asistan:';
+
+  abortController = new AbortController();
+
+  if (streamingEnabled) {
+    const bubble = createStreamingBubble();
+    let fullText = '';
+    try {
+      const resp = await fetch(`${ep}/api/generate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        signal: abortController.signal,
+        body: JSON.stringify({
+          model: MODEL_NAME,
+          prompt: fullPrompt,
+          stream: true,
+          options: { temperature, top_p: parseFloat(document.getElementById('topPVal')?.textContent || 0.9) }
+        })
+      });
+
+      const reader = resp.body.getReader();
+      const decoder = new TextDecoder();
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        const chunk = decoder.decode(value);
+        const lines = chunk.split('\n').filter(Boolean);
+        for (const line of lines) {
+          try {
+            const data = JSON.parse(line);
+            if (data.response) {
+              fullText += data.response;
+              bubble.innerHTML = formatContent(fullText) + '<span class="stream-cursor"></span>';
+              scrollToBottom();
             }
-        });
-
-        // Verileri Buluttan Çekme (MESAJLARIN KALMASINI SAĞLAYAN KISIM)
-        async function loadChatsFromFirebase() {
-            if(!currentUser) return;
-            statusIndicator.textContent = "Bulut yükleniyor...";
-            try {
-                const docRef = doc(db, "users", currentUser.uid);
-                const docSnap = await getDoc(docRef);
-                
-                if (docSnap.exists() && docSnap.data().chats) {
-                    userChats = docSnap.data().chats;
-                } else {
-                    userChats = {};
-                }
-                
-                renderHistory();
-                
-                // Eğer daha önceden kalan sohbet varsa son sohbeti yükle, yoksa yeni aç
-                const keys = Object.keys(userChats);
-                if (keys.length > 0) {
-                    currentChatId = keys[keys.length - 1];
-                    loadChat(currentChatId);
-                } else { 
-                    startNewChat(); 
-                }
-            } catch (e) { 
-                console.error("Firebase veri yükleme hatası:", e); 
-            }
-            statusIndicator.textContent = isAdmin ? "Sistem: Uncensored Admin" : "Sistem: Filtreli (Normal)";
+            if (data.done) break;
+          } catch {}
         }
+      }
 
-        // Verileri Buluta Yedekleme
-        async function syncWithFirebase() {
-            if(!currentUser) return;
-            try { 
-                const docRef = doc(db, "users", currentUser.uid);
-                await setDoc(docRef, { chats: userChats }, { merge: true }); 
-            } catch (e) { 
-                console.error("Firebase senkronizasyon hatası:", e); 
-            }
-        }
+      finalizeStreamGroup(fullText);
+      chats[currentChatId].messages.push({ role: 'ai', content: fullText });
+      updateTokenStats(fullText, Date.now() - startTime);
 
-        userPrompt.addEventListener('input', function() {
-            this.style.height = '24px';
-            this.style.height = (this.scrollHeight - 10) + 'px';
-        });
+    } catch (err) {
+      if (err.name === 'AbortError') {
+        finalizeStreamGroup(fullText || '⛔ Yanıt durduruldu.');
+        if (fullText) chats[currentChatId].messages.push({ role: 'ai', content: fullText });
+      } else {
+        const sg = document.getElementById('streamGroup');
+        if (sg) sg.remove();
+        renderMessage('ai', `**Hata:** Ollama bağlantısı başarısız.\n\`\`\`\n${err.message}\n\`\`\`\nOllama'nın çalıştığından emin ol: \`ollama serve\``);
+        showToast('Ollama bağlantı hatası', 'error');
+      }
+    }
 
-        imageInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                selectedImageBase64 = event.target.result.split(',')[1];
-                previewArea.innerHTML = `<span style="color:#8e918f; font-size:14px;">📎 Analiz Kuyruğunda: ${file.name}</span>`;
-            };
-            reader.readAsDataURL(file);
-        });
+  } else {
+    addThinkingIndicator();
+    try {
+      const resp = await fetch(`${ep}/api/generate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        signal: abortController.signal,
+        body: JSON.stringify({
+          model: MODEL_NAME,
+          prompt: fullPrompt,
+          stream: false,
+          options: { temperature }
+        })
+      });
+      const data = await resp.json();
+      removeThinkingIndicator();
+      const aiReply = data.response || '(Yanıt alınamadı)';
+      renderMessage('ai', aiReply);
+      chats[currentChatId].messages.push({ role: 'ai', content: aiReply });
+      updateTokenStats(aiReply, Date.now() - startTime);
+    } catch (err) {
+      removeThinkingIndicator();
+      if (err.name !== 'AbortError') {
+        renderMessage('ai', `**Hata:** \`${err.message}\``);
+        showToast('Bağlantı hatası', 'error');
+      }
+    }
+  }
 
-        // Sol Menüdeki Geçmişi Çizdirme
-        function renderHistory() {
-            historyList.innerHTML = '';
-            Object.keys(userChats).reverse().forEach(id => {
-                const item = document.createElement('div');
-                item.classList.add('history-item');
-                if(id === currentChatId) item.classList.add('active');
-                item.textContent = userChats[id].title || "Yeni Sohbet";
-                item.onclick = () => loadChat(id);
-                historyList.appendChild(item);
-            });
-        }
+  isGenerating = false;
+  setGeneratingUI(false);
+  saveStorage();
+  updateStats();
+}
 
-        function startNewChat() {
-            currentChatId = 'chat_' + Date.now();
-            userChats[currentChatId] = { title: "Yeni Sohbet", messages: [] };
-            chatWindow.innerHTML = '';
-            renderHistory();
-            syncWithFirebase();
-        }
+function stopGeneration() {
+  if (abortController) abortController.abort();
+  isGenerating = false;
+  setGeneratingUI(false);
+}
 
-        function loadChat(id) {
-            currentChatId = id;
-            chatWindow.innerHTML = '';
-            renderHistory();
-            if(userChats[id] && userChats[id].messages) {
-                userChats[id].messages.forEach(msg => {
-                    appendMessageToUI(msg.text, msg.sender, msg.imgData);
-                });
-            }
-        }
+function setGeneratingUI(on) {
+  document.getElementById('sendBtn').style.display = on ? 'none' : 'flex';
+  document.getElementById('stopBtn').style.display = on ? 'flex' : 'none';
+  document.getElementById('sendBtn').disabled = on;
+}
 
-        function formatAIResponse(rawText) {
-            const codeBlockRegex = /```(\w*)\n([\s\S]*?)```/g;
-            let formatted = rawText;
-            if (!rawText.includes('```')) {
-                const safeDiv = document.createElement('div');
-                safeDiv.textContent = rawText;
-                return safeDiv.innerHTML.replace(/\n/g, '<br>');
-            }
-            formatted = formatted.replace(codeBlockRegex, (match, lang, code) => {
-                const uniqueId = 'code_' + Math.random().toString(36).substr(2, 9);
-                const escapedCode = code.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-                return `<pre><button class="copy-btn" onclick="window.copyToClipboard('${uniqueId}')">Kopyala</button><code id="${uniqueId}">${escapedCode}</code></pre>`;
-            });
-            return formatted.replace(/\n/g, '<br>').replace(/<\/pre><br>/g, '</pre>');
-        }
+/* ─────────────────────────────────────────────────────────────────
+   QUICK ACTIONS
+───────────────────────────────────────────────────────────────── */
+function quickPrompt(text) {
+  document.getElementById('userInput').value = text;
+  autoResize(document.getElementById('userInput'));
+  updateCharCounter(document.getElementById('userInput'));
+  document.getElementById('userInput').focus();
+}
 
-        window.copyToClipboard = function(id) {
-            const codeText = document.getElementById(id).innerText;
-            navigator.clipboard.writeText(codeText).then(() => { alert("Kod kopyalandı!"); });
-        };
+function injectPrompt(text) {
+  const el = document.getElementById('userInput');
+  el.value = (el.value ? el.value + ' ' : '') + text;
+  autoResize(el);
+  updateCharCounter(el);
+  el.focus();
+}
 
-        function appendMessageToUI(text, sender, imgData = null) {
-            const row = document.createElement('div');
-            row.classList.add('message-row', `${sender}-row`);
-            if(sender === 'ai' && isAdmin) row.classList.add('admin-mode-active');
+async function regenMsg(btn) {
+  const chat = chats[currentChatId];
+  if (!chat || chat.messages.length < 2) return;
+  // find last user message
+  const lastUserIdx = [...chat.messages].reverse().findIndex(m => m.role === 'user');
+  if (lastUserIdx === -1) return;
+  // remove last AI message
+  const aiIdx = chat.messages.length - 1;
+  if (chat.messages[aiIdx].role === 'ai') {
+    chat.messages.splice(aiIdx, 1);
+    const groups = document.querySelectorAll('.msg-group');
+    if (groups.length) groups[groups.length - 1].remove();
+    const lastUser = chat.messages[chat.messages.length - 1];
+    if (lastUser && lastUser.role === 'user') {
+      await generateResponse(lastUser.content);
+    }
+  }
+}
 
-            const msgDiv = document.createElement('div');
-            msgDiv.classList.add('message');
+/* ─────────────────────────────────────────────────────────────────
+   FILE HANDLING
+───────────────────────────────────────────────────────────────── */
+function triggerFileUpload() {
+  document.getElementById('fileInput').click();
+}
 
-            if(sender === 'ai') {
-                msgDiv.innerHTML = formatAIResponse(text);
-            } else {
-                msgDiv.textContent = text;
-            }
+async function handleFiles(files) {
+  for (const file of files) {
+    const content = await file.text().catch(() => `[Binary dosya: ${file.name}]`);
+    attachedFiles.push({ name: file.name, content });
+    addFileChip(file.name, attachedFiles.length - 1);
+  }
+}
 
-            if (imgData) {
-                const img = document.createElement('img');
-                img.src = `data:image/jpeg;base64,${imgData}`;
-                img.classList.add('uploaded-img');
-                msgDiv.appendChild(img);
-            }
+function addFileChip(name, idx) {
+  const chips = document.getElementById('fileChips');
+  chips.style.display = 'flex';
+  const chip = document.createElement('div');
+  chip.className = 'file-chip';
+  chip.id = `fc_${idx}`;
+  chip.innerHTML = `<i class="fa-solid fa-file-code"></i> ${escapeHtml(name)} <button class="file-chip-remove" onclick="removeFile(${idx})"><i class="fa-solid fa-xmark"></i></button>`;
+  chips.appendChild(chip);
+}
 
-            row.appendChild(msgDiv);
-            chatWindow.appendChild(row);
-            chatWindow.scrollTop = chatWindow.scrollHeight;
-        }
+function removeFile(idx) {
+  attachedFiles[idx] = null;
+  const el = document.getElementById(`fc_${idx}`);
+  if (el) el.remove();
+  attachedFiles = attachedFiles.filter(Boolean);
+}
 
-        // BAŞLIĞI VE MESAJLARI KALICI YAPAN KRİTİK FONKSİYON
-        async function handleSend() {
-            const promptText = userPrompt.value.trim();
-            if (!promptText && !selectedImageBase64) return;
-            if (!currentUser) return alert("Oturum doğrulanmadı.");
+/* ─────────────────────────────────────────────────────────────────
+   MESSAGE ACTIONS
+───────────────────────────────────────────────────────────────── */
+function copyMsg(btn) {
+  const bubble = btn.closest('.msg-content-wrap').querySelector('.msg-bubble');
+  const text = bubble ? bubble.innerText : '';
+  navigator.clipboard.writeText(text).then(() => {
+    btn.innerHTML = '<i class="fa-solid fa-check"></i>';
+    setTimeout(() => btn.innerHTML = '<i class="fa-solid fa-copy"></i>', 2000);
+    showToast('Kopyalandı', 'success');
+  });
+}
 
-            if (!currentChatId) startNewChat();
+function copyCode(btn) {
+  const pre = btn.closest('.code-header').nextElementSibling;
+  const text = pre ? pre.innerText : '';
+  navigator.clipboard.writeText(text).then(() => {
+    btn.innerHTML = '<i class="fa-solid fa-check"></i> Kopyalandı';
+    setTimeout(() => btn.innerHTML = '<i class="fa-solid fa-copy"></i> Kopyala', 2000);
+  });
+}
 
-            // Kullanıcı mesajını yerel belleğe ve ekrana ekle
-            userChats[currentChatId].messages.push({ sender: 'user', text: promptText, imgData: selectedImageBase64 });
-            appendMessageToUI(promptText, 'user', selectedImageBase64);
-            
-            // Eğer ilk mesajsa sohbet konusunu otomatik güncelle (Senin istediğin gibi)
-            if (userChats[currentChatId].messages.length === 1 || userChats[currentChatId].title === "Yeni Sohbet") {
-                userChats[currentChatId].title = promptText.substring(0, 24) + (promptText.length > 24 ? "..." : "");
-                renderHistory();
-            }
+function likeMsg(btn) {
+  btn.classList.toggle('liked');
+  btn.closest('.msg-actions').querySelectorAll('.msg-action-btn').forEach(b => {
+    if (b !== btn) b.classList.remove('disliked');
+  });
+}
+function dislikeMsg(btn) {
+  btn.classList.toggle('disliked');
+  btn.closest('.msg-actions').querySelectorAll('.msg-action-btn').forEach(b => {
+    if (b !== btn) b.classList.remove('liked');
+  });
+}
 
-            userPrompt.value = '';
-            userPrompt.style.height = '24px';
-            previewArea.innerHTML = '';
-            statusIndicator.textContent = "Qwen düşünüyor...";
+/* ─────────────────────────────────────────────────────────────────
+   STATS
+───────────────────────────────────────────────────────────────── */
+function updateTokenStats(text, ms) {
+  const tokens = Math.ceil(text.split(/\s+/).length * 1.3);
+  stats.messages++;
+  stats.tokens += tokens;
+  stats.lastTime = ms;
+  localStorage.setItem('nos_stats', JSON.stringify(stats));
+  updateStats();
+}
 
-            try {
-                const activeModel = selectedImageBase64 ? VISION_MODEL : DEFAULT_MODEL;
-                const sysInstruction = isAdmin ? "" : "Sen kurallara uyan, filtreli, net kodlar ve cevaplar yazan bir yardımcı asistanısın.";
+function updateStats() {
+  let totalMessages = 0;
+  Object.values(chats).forEach(c => { totalMessages += c.messages?.length || 0; });
+  updateStatDisplay('statMessages', totalMessages);
+  updateStatDisplay('statTokens', stats.tokens.toLocaleString());
+  updateStatDisplay('statChats', Object.keys(chats).length);
+  updateStatDisplay('statLastTime', stats.lastTime ? `${(stats.lastTime/1000).toFixed(1)}s` : '—');
 
-                const bodyPayload = {
-                    model: activeModel,
-                    prompt: promptText,
-                    system: sysInstruction,
-                    stream: false,
-                    options: { temperature: isAdmin ? 0.90 : 0.2 }
-                };
+  const ctx = chats[currentChatId]?.messages?.length || 0;
+  const ctxMax = 4096;
+  updateStatDisplay('contextUsed', ctx * 100);
+  updateStatDisplay('contextMax', ctxMax);
+  const fill = Math.min(100, (ctx * 100) / ctxMax);
+  const bar = document.getElementById('tokenBarFill');
+  if (bar) bar.style.width = fill + '%';
+}
 
-                if (selectedImageBase64) bodyPayload.images = [selectedImageBase64];
+function updateStatDisplay(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = val;
+}
 
-                const response = await fetch(`${OLLAMA_TARGET}/api/generate`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(bodyPayload)
-                });
+/* ─────────────────────────────────────────────────────────────────
+   TOASTS
+───────────────────────────────────────────────────────────────── */
+function showToast(msg, type = 'info') {
+  const icons = { success: 'fa-circle-check', error: 'fa-circle-xmark', info: 'fa-circle-info' };
+  const c = document.getElementById('toastContainer');
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.innerHTML = `<i class="fa-solid ${icons[type]} toast-icon"></i> ${msg}`;
+  c.appendChild(t);
+  setTimeout(() => {
+    t.classList.add('out');
+    setTimeout(() => t.remove(), 300);
+  }, 3000);
+}
 
-                if (!response.ok) throw new Error("Sunucu hatası");
+/* ─────────────────────────────────────────────────────────────────
+   SEARCH
+───────────────────────────────────────────────────────────────── */
+function openSearch() {
+  document.getElementById('searchOverlay').classList.add('visible');
+  setTimeout(() => document.getElementById('searchInput').focus(), 100);
+}
+function closeSearch() {
+  document.getElementById('searchOverlay').classList.remove('visible');
+  document.getElementById('searchInput').value = '';
+  document.getElementById('searchResults').innerHTML = '<div class="search-empty">Aramak için yazmaya başla</div>';
+}
+function doSearch(q) {
+  const res = document.getElementById('searchResults');
+  if (!q) { res.innerHTML = '<div class="search-empty">Aramak için yazmaya başla</div>'; return; }
+  const matches = [];
+  Object.entries(chats).forEach(([id, chat]) => {
+    if (chat.title.toLowerCase().includes(q.toLowerCase())) {
+      matches.push({ id, type: 'chat', title: chat.title, meta: `${chat.messages?.length || 0} mesaj` });
+    }
+    chat.messages?.forEach((m, i) => {
+      if (m.content.toLowerCase().includes(q.toLowerCase())) {
+        matches.push({ id, type: 'msg', title: m.content.slice(0, 60) + '…', meta: `${chat.title} • ${m.role}` });
+      }
+    });
+  });
+  if (!matches.length) { res.innerHTML = '<div class="search-empty">Sonuç bulunamadı</div>'; return; }
+  res.innerHTML = matches.slice(0, 8).map(m => `
+    <div class="search-result" onclick="loadChat('${m.id}'); closeSearch()">
+      <i class="fa-solid ${m.type === 'chat' ? 'fa-comment' : 'fa-message'} search-result-icon"></i>
+      <div>
+        <div class="search-result-title">${escapeHtml(m.title)}</div>
+        <div class="search-result-meta">${escapeHtml(m.meta)}</div>
+      </div>
+    </div>`).join('');
+}
 
-                const data = await response.json();
-                
-                // Yapay zeka yanıtını belleğe ekle ve ekrana bas
-                userChats[currentChatId].messages.push({ sender: 'ai', text: data.response });
-                appendMessageToUI(data.response, 'ai');
-                
-                // Firebase'e kalıcı olarak fırlat
-                await syncWithFirebase();
+/* ─────────────────────────────────────────────────────────────────
+   CONTEXT MENU
+───────────────────────────────────────────────────────────────── */
+function setupContextMenu() {
+  document.addEventListener('click', () => {
+    document.getElementById('contextMenu').style.display = 'none';
+  });
+}
+function showContextMenu(e, id) {
+  ctxTargetChatId = id;
+  const menu = document.getElementById('contextMenu');
+  menu.style.display = 'block';
+  menu.style.left = e.clientX + 'px';
+  menu.style.top = Math.min(e.clientY, window.innerHeight - 160) + 'px';
+}
+function ctxRename() { renameChat(ctxTargetChatId); }
+function ctxPin() {
+  if (chats[ctxTargetChatId]) {
+    chats[ctxTargetChatId].pinned = !chats[ctxTargetChatId].pinned;
+    saveStorage();
+    renderChatList();
+    showToast(chats[ctxTargetChatId].pinned ? 'Sabitlendi' : 'Sabit kaldırıldı', 'info');
+  }
+}
+function ctxDelete() { deleteChat(ctxTargetChatId); }
 
-            } catch (error) {
-                console.error(error);
-                appendMessageToUI("Ollama Motoru Kapalı. Sunucuyu kontrol et. Termux'ta 'ollama serve' açık olduğundan emin ol.", 'ai');
-            }
-            
-            statusIndicator.textContent = isAdmin ? "Sistem: Uncensored Admin" : "Sistem: Filtreli (Normal)";
-            selectedImageBase64 = null;
-        }
+/* ─────────────────────────────────────────────────────────────────
+   UI CONTROLS
+───────────────────────────────────────────────────────────────── */
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('collapsed');
+}
+function toggleRightPanel() {
+  document.getElementById('rightPanel').classList.toggle('collapsed');
+}
 
-        window.addEventListener('keydown', (e) => {
-            if (e.ctrlKey && e.key.toLowerCase() === 'q') {
-                e.preventDefault();
-                adminModal.style.display = 'flex';
-                adminPass.focus();
-            }
-        });
+function switchPanelTab(el, panel) {
+  document.querySelectorAll('.panel-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  ['panelSettings','panelStats','panelSystem'].forEach(id => {
+    document.getElementById(id).style.display = 'none';
+  });
+  document.getElementById('panel' + panel.charAt(0).toUpperCase() + panel.slice(1)).style.display = 'flex';
+}
 
-        authBtn.addEventListener('click', () => {
-            if (adminPass.value === '13123406') {
-                isAdmin = true;
-                statusIndicator.textContent = "Sistem: Uncensored Admin";
-                statusIndicator.style.color = "var(--accent)";
-                alert("KÖKLÜ ERİŞİM İZNİ VERİLDİ.");
-                adminModal.style.display = 'none';
-            } else { alert("ERİŞİM ENGELLENDİ."); adminPass.value = ''; }
-        });
+function updateSetting(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = val;
+}
 
-        sendBtn.addEventListener('click', handleSend);
-        userPrompt.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } });
-        newChatBtn.addEventListener('click', startNewChat);
-    </script>
+function setMode(mode) {
+  currentMode = mode;
+  document.querySelectorAll('.toolbar-btn[id^="tb"]').forEach(b => b.classList.remove('active'));
+  document.getElementById('tb' + mode.charAt(0).toUpperCase() + mode.slice(1))?.classList.add('active');
+  const placeholders = {
+    normal: 'Sorunu sor, kod yaz, sistemi hackle...',
+    code: '// Kodu buraya yapıştır veya isteğini yaz...',
+    creative: 'Serbest yaz, yaratıcı düşün...'
+  };
+  document.getElementById('userInput').placeholder = placeholders[mode] || '';
+}
+
+function toggleStreaming() {
+  streamingEnabled = !streamingEnabled;
+  localStorage.setItem('nos_stream', streamingEnabled);
+  updateStreamBtn();
+  showToast(streamingEnabled ? 'Streaming açık' : 'Streaming kapalı', 'info');
+}
+function updateStreamBtn() {
+  const btn = document.getElementById('tbStream');
+  if (btn) btn.classList.toggle('active', streamingEnabled);
+}
+
+function toggleModelDropdown() {
+  document.getElementById('modelSelector').classList.toggle('open');
+}
+
+function selectModel(model, el) {
+  MODEL_NAME = model;
+  document.getElementById('modelName').textContent = model;
+  localStorage.setItem('nos_model', model);
+  document.querySelectorAll('.model-option').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('modelSelector').classList.remove('open');
+  showToast(`Model değiştirildi: ${model}`, 'info');
+  checkOllamaStatus();
+}
+
+function saveSystemPrompt() {
+  localStorage.setItem('nos_sysprompt', document.getElementById('systemPrompt').value);
+  showToast('Sistem prompt kaydedildi', 'success');
+}
+
+function setupSysPromptCounter() {
+  const ta = document.getElementById('systemPrompt');
+  const update = () => {
+    const el = document.getElementById('sysPromptLen');
+    if (el) el.textContent = ta.value.length + ' karakter';
+  };
+  ta.addEventListener('input', update);
+  update();
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   INPUT HELPERS
+───────────────────────────────────────────────────────────────── */
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 200) + 'px';
+}
+function updateCharCounter(el) {
+  document.getElementById('charCounter').textContent = el.value.length;
+}
+function handleKeyDown(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    handleSend();
+  }
+}
+function scrollToBottom() {
+  const c = document.getElementById('messagesContainer');
+  c.scrollTop = c.scrollHeight;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   GLOBAL KEYBOARD SHORTCUTS
+───────────────────────────────────────────────────────────────── */
+function handleGlobalKey(e) {
+  // Cmd/Ctrl+K -> Search
+  if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+    e.preventDefault();
+    openSearch();
+  }
+  // Cmd/Ctrl+N -> New Chat
+  if ((e.metaKey || e.ctrlKey) && e.key === 'n') {
+    e.preventDefault();
+    createNewChat();
+  }
+  // Escape -> Close search / context menu
+  if (e.key === 'Escape') {
+    closeSearch();
+    document.getElementById('contextMenu').style.display = 'none';
+    document.getElementById('modelSelector').classList.remove('open');
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   EXPORT
+───────────────────────────────────────────────────────────────── */
+function exportAllChats() {
+  const data = JSON.stringify(chats, null, 2);
+  const blob = new Blob([data], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `neuralos-chats-${Date.now()}.json`;
+  a.click();
+  showToast('Sohbetler dışa aktarıldı', 'success');
+}
+
+function shareChat() {
+  const chat = chats[currentChatId];
+  if (!chat) return;
+  const text = chat.messages.map(m => `[${m.role === 'ai' ? 'AI' : 'Sen'}]: ${m.content}`).join('\n\n');
+  navigator.clipboard.writeText(text).then(() => showToast('Sohbet panoya kopyalandı', 'success'));
+}
+
+function clearAll() {
+  if (!confirm('Tüm sohbetler silinecek. Emin misin?')) return;
+  chats = {};
+  currentChatId = null;
+  stats = { messages: 0, tokens: 0, lastTime: 0 };
+  saveStorage();
+  createNewChat();
+  showToast('Tüm sohbetler silindi', 'success');
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   DRAG & DROP
+───────────────────────────────────────────────────────────────── */
+document.addEventListener('dragover', e => e.preventDefault());
+document.addEventListener('drop', e => {
+  e.preventDefault();
+  if (e.dataTransfer.files.length) handleFiles(e.dataTransfer.files);
+});
+
+/* ─────────────────────────────────────────────────────────────────
+   START
+───────────────────────────────────────────────────────────────── */
+window.addEventListener('load', init);
+</script>
 </body>
 </html>
