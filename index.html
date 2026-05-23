@@ -159,6 +159,22 @@ body::before {
   opacity: 0;
   pointer-events: none;
 }
+  function dumpRawLogs() {
+    if (!adminMode) return;
+    const blob = new Blob([JSON.stringify(chats, null, 2)], {type: 'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `neuralos_RAW_DUMP_${Date.now()}.json`;
+    a.click();
+}
+
+function toggleDebugMode() {
+    if (!adminMode) return;
+    // Debug modunu açarsan, konsola veya arayüze token detaylarını basar
+    console.log("Debug Mode Active: Showing raw Ollama responses.");
+    showToast("Debug modu aktif (Konsolu kontrol et)", "info");
+}
 
 /* Logo */
 .logo-area {
